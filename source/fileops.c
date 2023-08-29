@@ -1,6 +1,5 @@
 #include "fileops.h"
 
-
 void fops_read(const char *file_path) {
     FILE *fileptr;
     // fileptr = fopen(file_path, "r");
