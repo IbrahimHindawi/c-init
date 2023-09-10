@@ -1,5 +1,6 @@
 #include "core.h"
 #include "fileops.h"
+#include "hkArray.h"
 
 #define N 1024
 u8 block[N];
@@ -32,6 +33,20 @@ int main(int argc, char *argv[]) {
 
     // dealloc all
     pos = (u64)mem;
+
+    /*
+     * What is a Queue?
+     * first in first out
+     * .                    | empty
+     * 0                    | enqueue
+     * 0 -> 1               | enqueue
+     * 0 -> 1 -> 2          | enqueue
+     * 0 -> 1 -> 2 -> 3     | enqueue
+     * 1 -> 2 -> 3          | dequeue
+     * 2 -> 3               | dequeue
+     * 3                    | dequeue
+     * .                    | empty
+     */
 
     return 0;
 }

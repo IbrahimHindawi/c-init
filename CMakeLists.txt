@@ -12,8 +12,8 @@ add_executable(${PROJECT_NAME}
     source/fileops.c
 )
 include_directories(source/)
-
-# add_subdirectory(extern)
+add_subdirectory(extern)
+target_link_libraries(${PROJECT_NAME} PUBLIC haikal)
 
 # find_package(cglm CONFIG REQUIRED)
 # target_link_libraries(${PROJECT_NAME} PRIVATE cglm::cglm)
