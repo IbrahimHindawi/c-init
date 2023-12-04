@@ -1,13 +1,39 @@
 #include "core.h"
 #include "fileops.h"
-#include "hkArray.h"
 
-#define N 1024
+// #include "hkArray.h"
+
+#define T i32
+#include "hkArrayT.h"
+
+#define T f32
+#include "hkArrayT.h"
+
+# define N 1024
 u8 block[N];
 
 int main(int argc, char *argv[]) {
-    fops_read("C:\\devel\\c-init\\test.txt");
-    printf("%s", fops_buffer);
+    i32 res = 0;
+
+    hkArrayf32 arrayf32 = hkArrayf32Create(8);
+    for( int i = 0; i < arrayf32.length; ++i) {
+        arrayf32.data[i] = i;
+    }
+    res = hkArrayf32IsEmpty(&arrayf32);
+    printf("%d\n", res);
+    hkArrayf32Destroy(&arrayf32);
+
+    hkArrayi32 arrayi32 = hkArrayi32Create(8);
+    for( int i = 0; i < arrayi32.length; ++i) {
+        arrayi32.data[i] = i;
+    }
+    res = hkArrayi32IsEmpty(&arrayi32);
+    printf("%d\n", res);
+    hkArrayi32Destroy(&arrayi32);
+
+
+    // fops_read("test.txt");
+    // printf("%s", fops_buffer);
 
     // initialize
     u8 *mem = block;
