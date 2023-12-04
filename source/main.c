@@ -65,6 +65,8 @@ int main(int argc, char *argv[]) {
     // dealloc all
     pos = (u64)mem;
 
+    fops_read("test.txt");
+
     /*
      * What is a Queue?
      * first in first out
