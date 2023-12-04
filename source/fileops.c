@@ -1,14 +1,7 @@
-
-#include <assert.h>
 #include "fileops.h"
+#include <assert.h>
 
-#define T f32
-#include "hkArrayT.h"
-
-typedef struct command {
-    i32 x;
-    i16 y;
-} command;
+#include "hkArrayT-primitives.h"
 
 void fops_read(const char *file_path) {
     FILE *fileptr;
@@ -29,9 +22,6 @@ void fops_read(const char *file_path) {
         }
     }
     fclose(fileptr);
-    hkArrayf32 arrayf32 = hkArrayf32Create(8);
-    for( int i = 0; i < arrayf32.length; ++i) {
-        arrayf32.data[i] = i;
-    }
-    hkArrayf32Destroy(&arrayf32);
+    hkArrayi64 arr = hkArrayi64Create(8);
+    hkArrayi64Destroy(&arr);
 }

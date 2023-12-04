@@ -2,20 +2,10 @@
 #include "fileops.h"
 
 // #include "hkArray.h"
-
-#define T f32
-#include "hkArrayT.h"
-
-#define T i32
-#include "hkArrayT.h"
+#include "hkArrayT-primitives.h"
 
 # define N 1024
 u8 block[N];
-
-typedef struct command {
-    i32 x;
-    i16 y;
-} command;
 
 int main(int argc, char *argv[]) {
     i32 res = 0;
@@ -35,6 +25,9 @@ int main(int argc, char *argv[]) {
     res = hkArrayi32IsEmpty(&arrayi32);
     printf("%d\n", res);
     hkArrayi32Destroy(&arrayi32);
+
+    hkArrayi64 arr = hkArrayi64Create(8);
+    hkArrayi64Destroy(&arr);
 
     // fops_read("test.txt");
     // printf("%s", fops_buffer);
