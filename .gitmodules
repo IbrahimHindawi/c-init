@@ -1,6 +1,6 @@
 [submodule "scripts"]
 	path = scripts
-	url = git@github.com:IbrahimHindawi/scripts
+	url = https://www.github.com/IbrahimHindawi/scripts
 [submodule "extern/haikal"]
 	path = extern/haikal
 	url = https://www.github.com/IbrahimHindawi/haikal
