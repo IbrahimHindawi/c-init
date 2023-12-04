@@ -3,14 +3,19 @@
 
 // #include "hkArray.h"
 
-#define T i32
+#define T f32
 #include "hkArrayT.h"
 
-#define T f32
+#define T i32
 #include "hkArrayT.h"
 
 # define N 1024
 u8 block[N];
+
+typedef struct command {
+    i32 x;
+    i16 y;
+} command;
 
 int main(int argc, char *argv[]) {
     i32 res = 0;
