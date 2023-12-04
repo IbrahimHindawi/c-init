@@ -36,7 +36,6 @@ int main(int argc, char *argv[]) {
     printf("%d\n", res);
     hkArrayi32Destroy(&arrayi32);
 
-
     // fops_read("test.txt");
     // printf("%s", fops_buffer);
 
@@ -64,8 +63,6 @@ int main(int argc, char *argv[]) {
 
     // dealloc all
     pos = (u64)mem;
-
-    fops_read("test.txt");
 
     /*
      * What is a Queue?
