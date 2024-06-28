@@ -8,10 +8,10 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED True)
 
 add_executable(${PROJECT_NAME}
-    source/main.c
-    source/fileops.c
+    src/main.c
+    src/fileops.c
 )
-include_directories(source/)
+include_directories(src/)
 add_subdirectory(extern)
 include_directories(extern/haikal/src)
 include_directories(extern/haikal/src/meta/gen)
