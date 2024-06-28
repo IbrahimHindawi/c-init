@@ -13,7 +13,8 @@ add_executable(${PROJECT_NAME}
 )
 include_directories(source/)
 add_subdirectory(extern)
-target_link_libraries(${PROJECT_NAME} PUBLIC haikal)
+include_directories(extern/haikal/src)
+include_directories(extern/haikal/src/meta/gen)
 
 # find_package(cglm CONFIG REQUIRED)
 # target_link_libraries(${PROJECT_NAME} PRIVATE cglm::cglm)

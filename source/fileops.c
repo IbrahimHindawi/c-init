@@ -1,8 +1,6 @@
 #include "fileops.h"
 #include <assert.h>
 
-#include "hkArrayT-primitives.h"
-
 void fops_read(const char *file_path) {
     FILE *fileptr;
     // fileptr = fopen(file_path, "r");
@@ -22,6 +20,4 @@ void fops_read(const char *file_path) {
         }
     }
     fclose(fileptr);
-    hkArrayi64 arr = hkArrayi64Create(8);
-    hkArrayi64Destroy(&arr);
 }
