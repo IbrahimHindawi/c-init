@@ -1,7 +1,7 @@
 [core]
 metapath = "extern/haikal/src/meta/"
 [meta]
-hkArray = []
-hkNode = []
+hkArray = ["vec3"]
+hkNode = ["vec3"]
 hkQueue = []
-hkList = []
+hkList = ["vec3"]
