@@ -4,6 +4,7 @@ Component componentCreate(int id) {
     Component result = {0};
     result.id = id;
     result.points = hkArray_i32_create(10);
+    return result;
 }
 
 void componentDestroy(Component *comp) {
