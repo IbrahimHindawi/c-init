@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
         string.data[i] = 0b01100000 | i + 1;
     }
     string.data[string.length - 1] = '\0';
-    printf("string: %s\n", string.data);
+    // printf("string: %s\n", string.data);
     hkArray_i8_destroy(&string);
 
     //haikal@hkArray:vec3
@@ -31,9 +31,7 @@ int main(int argc, char *argv[]) {
         vectors->data[i].y = (f32)i;
         vectors->data[i].z = 3.141592f;
     }
-    for (int i = 0; i < vectors->length; ++i) {
-        printf("vectors[%d] = {%f, %f, %f}\n", i, vectors->data[i].x, vectors->data[i].y, vectors->data[i].z);
-    }
+    // for (int i = 0; i < vectors->length; ++i) { printf("vectors[%d] = {%f, %f, %f}\n", i, vectors->data[i].x, vectors->data[i].y, vectors->data[i].z); }
     hkArray_vec3_destroy(vectors);
 
     //haikal@hkArray:i8
@@ -43,15 +41,19 @@ int main(int argc, char *argv[]) {
     //haikal@hkNode:i32
     //haikal@hkList:i32
     hkList_i32 *loi = hkList_i32_create();
-    hkList_i32_append(loi, 0);
-    hkList_i32_append(loi, 1);
-    hkList_i32_append(loi, 2);
-    hkList_i32_append(loi, 3);
-    hkNode_i32 *iter = loi->head;
-    while (iter != NULL) {
-        printf("loi: {%d, %p}\n", iter->data, iter->next);
-        iter = iter->next;
-    }
+    hkNode_i32 *iter = NULL;
+    hkNode_i32 *node = NULL;
+    hkList_i32_append(loi, 11);
+    hkList_i32_append(loi, 22);
+    hkList_i32_append(loi, 33);
+    hkList_i32_append(loi, 44);
+    iter = loi->head; while (iter != NULL) { printf("loi: {%d, %p}\n", iter->data, iter->next); iter = iter->next; } printf("\n");
+    node = hkList_i32_remove_at(loi, 0); if (node) { hkNode_i32_destroy(&node); }
+    iter = loi->head; while (iter != NULL) { printf("loi: {%d, %p}\n", iter->data, iter->next); iter = iter->next; } printf("\n");
+    node = hkList_i32_remove_at(loi, 1); if (node) { hkNode_i32_destroy(&node); }
+    iter = loi->head; while (iter != NULL) { printf("loi: {%d, %p}\n", iter->data, iter->next); iter = iter->next; } printf("\n");
+    node = hkList_i32_remove_at(loi, 1); if (node) { hkNode_i32_destroy(&node); }
+    iter = loi->head; while (iter != NULL) { printf("loi: {%d, %p}\n", iter->data, iter->next); iter = iter->next; } printf("\n");
     hkList_i32_destroy(&loi);
 
     // for this to work, we need to read all the included files
