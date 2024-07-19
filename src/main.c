@@ -1,3 +1,4 @@
+#define CORE_IMPL
 #include <core.h>
 
 #include "vec3.h"
@@ -47,19 +48,20 @@ int main(int argc, char *argv[]) {
     hkList_i32_append(loi, 22);
     hkList_i32_append(loi, 33);
     hkList_i32_append(loi, 44);
-    iter = loi->head; while (iter != NULL) { printf("loi: {%d, %p}\n", iter->data, iter->next); iter = iter->next; } printf("\n");
+    hkList_i32_print(loi);
     node = hkList_i32_remove_at(loi, 0); if (node) { hkNode_i32_destroy(&node); }
-    iter = loi->head; while (iter != NULL) { printf("loi: {%d, %p}\n", iter->data, iter->next); iter = iter->next; } printf("\n");
+    hkList_i32_print(loi);
     node = hkList_i32_remove_at(loi, 1); if (node) { hkNode_i32_destroy(&node); }
-    iter = loi->head; while (iter != NULL) { printf("loi: {%d, %p}\n", iter->data, iter->next); iter = iter->next; } printf("\n");
+    hkList_i32_print(loi);
     node = hkList_i32_remove_at(loi, 1); if (node) { hkNode_i32_destroy(&node); }
-    iter = loi->head; while (iter != NULL) { printf("loi: {%d, %p}\n", iter->data, iter->next); iter = iter->next; } printf("\n");
+    hkList_i32_print(loi);
     hkList_i32_destroy(&loi);
 
     // for this to work, we need to read all the included files
     // compile_commands.json should be enough...
     // or, use a unity build and just include everything in main.c 
     // but LSP will die in Component.h...
+    // ===========================================================
     // Component comp = Component_create(10);
     // printf("comp.id = %d\n", comp.id);
     // Component_destroy(&comp);
