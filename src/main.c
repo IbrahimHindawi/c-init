@@ -15,6 +15,9 @@
 #define HKQUEUE_IMPL
 #include <hkQueue.h>
 
+#define HKSTACK_IMPL
+#include <hkStack.h>
+
 // #include "Component.h"
 
 void hkArray_test() {
@@ -104,11 +107,45 @@ void hkQueue_test() {
     hkQueue_i32_destroy(&q);
 }
 
+void hkStack_test() {
+    //haikal@hkStack:i32
+    hkStack_i32 *stack = hkStack_i32_create();
+    hkNode_i32 *node = NULL;
+    hkStack_i32_push(stack, 32);
+    hkStack_i32_push(stack, 12);
+    hkStack_i32_push(stack, 22);
+    hkStack_i32_push(stack, 42);
+    hkStack_i32_print(stack);
+
+    node = hkStack_i32_pop(stack);
+    printf("%d\n", hkNode_i32_value(node));
+    hkStack_i32_print(stack);
+
+    node = hkStack_i32_pop(stack);
+    printf("%d\n", hkNode_i32_value(node));
+    hkStack_i32_print(stack);
+
+    node = hkStack_i32_pop(stack);
+    printf("%d\n", hkNode_i32_value(node));
+    hkStack_i32_print(stack);
+
+    node = hkStack_i32_pop(stack);
+    printf("%d\n", hkNode_i32_value(node));
+    hkStack_i32_print(stack);
+
+    node = hkStack_i32_pop(stack);
+    printf("%d\n", hkNode_i32_value(node));
+    hkStack_i32_print(stack);
+
+    hkStack_i32_destroy(&stack);
+}
+
 int main(int argc, char *argv[]) {
     // tests
     // hkArray_test();
     // hkList_test();
-    hkQueue_test();
+    // hkQueue_test();
+    hkStack_test();
 
     // TODO: fix code generation for external headers
     // for this to work, we need to read all the included files
