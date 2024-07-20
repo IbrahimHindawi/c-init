@@ -12,16 +12,19 @@
 #define HKLIST_IMPL
 #include <hkList.h>
 
+#define HKQUEUE_IMPL
+#include <hkQueue.h>
+
 // #include "Component.h"
 
-int main(int argc, char *argv[]) {
+void hkArray_test() {
     //haikal@hkArray:i8
     hkArray_i8 string = hkArray_i8_create(27);
     for (int i = 0; i < string.length; ++i) {
         string.data[i] = 0b01100000 | i + 1;
     }
     string.data[string.length - 1] = '\0';
-    // printf("string: %s\n", string.data);
+    printf("string: %s\n", string.data);
     hkArray_i8_destroy(&string);
 
     //haikal@hkArray:vec3
@@ -32,13 +35,15 @@ int main(int argc, char *argv[]) {
         vectors->data[i].y = (f32)i;
         vectors->data[i].z = 3.141592f;
     }
-    // for (int i = 0; i < vectors->length; ++i) { printf("vectors[%d] = {%f, %f, %f}\n", i, vectors->data[i].x, vectors->data[i].y, vectors->data[i].z); }
+    for (int i = 0; i < vectors->length; ++i) { printf("vectors[%d] = {%f, %f, %f}\n", i, vectors->data[i].x, vectors->data[i].y, vectors->data[i].z); }
     hkArray_vec3_destroy(vectors);
 
     //haikal@hkArray:i8
     hkArray_i8 arr = hkArray_i8_create(8);
     hkArray_i8_destroy(&arr);
+}
 
+void hkList_test() {
     //haikal@hkNode:i32
     //haikal@hkList:i32
     hkList_i32 *loi = hkList_i32_create();
@@ -56,7 +61,56 @@ int main(int argc, char *argv[]) {
     node = hkList_i32_remove_at(loi, 1); if (node) { hkNode_i32_destroy(&node); }
     hkList_i32_print(loi);
     hkList_i32_destroy(&loi);
+}
 
+void hkQueue_test() {
+    //haikal@hkQueue:i32
+    hkQueue_i32 *q = hkQueue_i32_create();
+    hkQueue_i32_print(q);
+    hkQueue_i32_enqueue(q, 0);
+    hkQueue_i32_print(q);
+    hkQueue_i32_enqueue(q, 1);
+    hkQueue_i32_print(q);
+    hkQueue_i32_enqueue(q, 2);
+    hkQueue_i32_print(q);
+
+    hkNode_i32 *node_i32 = NULL;
+    i32 value = 0;
+
+    node_i32 = hkQueue_i32_dequeue(q);
+    value = hkNode_i32_value(node_i32);
+    printf("node value: %d\n", value);
+    hkNode_i32_destroy(&node_i32);
+    hkQueue_i32_print(q);
+
+    node_i32 = hkQueue_i32_dequeue(q);
+    value = hkNode_i32_value(node_i32);
+    printf("node value: %d\n", value);
+    hkNode_i32_destroy(&node_i32);
+    hkQueue_i32_print(q);
+
+    node_i32 = hkQueue_i32_dequeue(q);
+    value = hkNode_i32_value(node_i32);
+    printf("node value: %d\n", value);
+    hkNode_i32_destroy(&node_i32);
+    hkQueue_i32_print(q);
+
+    node_i32 = hkQueue_i32_dequeue(q);
+    value = hkNode_i32_value(node_i32);
+    printf("node value: %d\n", value);
+    hkNode_i32_destroy(&node_i32);
+    hkQueue_i32_print(q);
+
+    hkQueue_i32_destroy(&q);
+}
+
+int main(int argc, char *argv[]) {
+    // tests
+    // hkArray_test();
+    // hkList_test();
+    hkQueue_test();
+
+    // TODO: fix code generation for external headers
     // for this to work, we need to read all the included files
     // compile_commands.json should be enough...
     // or, use a unity build and just include everything in main.c 
