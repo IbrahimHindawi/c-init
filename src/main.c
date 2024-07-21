@@ -12,6 +12,12 @@
 #define HKLIST_IMPL
 #include <hkList.h>
 
+#define HKBINODE_IMPL
+#include <hkBiNode.h>
+
+#define HKDLIST_IMPL
+#include <hkDList.h>
+
 #define HKQUEUE_IMPL
 #include <hkQueue.h>
 
@@ -64,6 +70,26 @@ void hkList_test() {
     node = hkList_i32_remove_at(loi, 1); if (node) { hkNode_i32_destroy(&node); }
     hkList_i32_print(loi);
     hkList_i32_destroy(&loi);
+}
+
+void hkDList_test() {
+    //haikal@hkBiNode:i32
+    //haikal@hkDList:i32
+    hkDList_i32 *loi = hkDList_i32_create();
+    hkBiNode_i32 *iter = NULL;
+    hkBiNode_i32 *node = NULL;
+    hkDList_i32_append(loi, 11);
+    hkDList_i32_append(loi, 22);
+    hkDList_i32_append(loi, 33);
+    hkDList_i32_append(loi, 44);
+    hkDList_i32_print(loi);
+    node = hkDList_i32_remove_at(loi, 0); if (node) { hkBiNode_i32_destroy(&node); }
+    hkDList_i32_print(loi);
+    node = hkDList_i32_remove_at(loi, 1); if (node) { hkBiNode_i32_destroy(&node); }
+    hkDList_i32_print(loi);
+    node = hkDList_i32_remove_at(loi, 1); if (node) { hkBiNode_i32_destroy(&node); }
+    hkDList_i32_print(loi);
+    hkDList_i32_destroy(&loi);
 }
 
 void hkQueue_test() {
@@ -144,8 +170,9 @@ int main(int argc, char *argv[]) {
     // tests
     // hkArray_test();
     // hkList_test();
+    hkDList_test();
     // hkQueue_test();
-    hkStack_test();
+    // hkStack_test();
 
     // TODO: fix code generation for external headers
     // for this to work, we need to read all the included files
