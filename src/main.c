@@ -170,7 +170,7 @@ int main(int argc, char *argv[]) {
     // tests
     // hkArray_test();
     // hkList_test();
-    hkDList_test();
+    // hkDList_test();
     // hkQueue_test();
     // hkStack_test();
 
