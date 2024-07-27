@@ -167,14 +167,13 @@ void hkStack_test() {
 }
 
 int main(int argc, char *argv[]) {
-    // tests
     // hkArray_test();
     // hkList_test();
     // hkDList_test();
     // hkQueue_test();
     // hkStack_test();
 
-    // TODO: fix code generation for external headers
+    // TODO: fix code gen for external files
     // for this to work, we need to read all the included files
     // compile_commands.json should be enough...
     // or, use a unity build and just include everything in main.c 
