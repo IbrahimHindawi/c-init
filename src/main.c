@@ -167,11 +167,11 @@ void hkStack_test() {
 }
 
 int main(int argc, char *argv[]) {
-    // hkArray_test();
-    // hkList_test();
-    // hkDList_test();
-    // hkQueue_test();
-    // hkStack_test();
+    hkArray_test();
+    hkList_test();
+    hkDList_test();
+    hkQueue_test();
+    hkStack_test();
 
     // TODO: fix code gen for external files
     // for this to work, we need to read all the included files
