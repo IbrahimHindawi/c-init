@@ -1,6 +1,8 @@
 #define CORE_IMPL
 #include <core.h>
 
+#include <Arena.h>
+
 #include "vec3.h"
 
 #define HKARRAY_IMPL
@@ -166,13 +168,92 @@ void hkStack_test() {
     hkStack_i32_destroy(&stack);
 }
 
-int main(int argc, char *argv[]) {
-    hkArray_test();
-    hkList_test();
-    hkDList_test();
-    hkQueue_test();
-    hkStack_test();
+structdef(Payload) {
+    i32 id;
+    i32 mx;
+    i8 *str;
+};
 
+structdef(vec4i8) { i8 x; i8 y; i8 z; i8 w; };
+
+void Arena_test() {
+    Arena arena = {0};
+    arenaInit(&arena, store);
+
+    const i32 len = 4;
+    const i32 els = sizeof(f32);
+    const i32 allocsize = els * len;
+    f32 *nums = arenaPush(&arena, allocsize);
+    for (i32 i = 0; i < len; ++i) {
+        nums[i] = (f32)(i + 1);
+    }
+    for (i32 i = 0; i < len; ++i) {
+        printf("%f ", nums[i]);
+    }
+    printf("\n");
+
+    u8 *ptr = (u8 *)nums;
+    for (i32 i = 0; i < allocsize; ++i) {
+        printf("%02x ", ptr[i]);
+    }
+    printf("\n");
+
+    i8 *str0 = strAlloc(&arena, "close to you");
+    i8 *str1 = strAlloc(&arena, "close to you");
+    i8 *str2 = strAlloc(&arena, "close to you");
+    printf("%s\n", str0);
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+
+    strDealloc(&arena, str2);
+    str2 = strAlloc(&arena, "fortitude");
+    printf("%s\n", str0);
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+
+    Payload *pld = arenaPushStruct(&arena, Payload);
+    pld->id = 0xDEADBEEF;
+    pld->mx = 0xCAFEBABE;
+    pld->str = "Name0";
+    arenaPop(&arena, sizeof(Payload));
+    pld = arenaPushStruct(&arena, Payload);
+    pld->id = 0xFFFFFFFF;
+    pld->mx = 0xFFFFFFFF;
+    pld->str = "Name0";
+    arenaPop(&arena, sizeof(Payload));
+
+    arenaClear(&arena);
+
+    // vec4i8 *vs = arenaPushArrayZero(&arena, vec4i8, 32);
+    const i32 npts = 32;
+    vec4i8 *vs = arenaPushArray(&arena, vec4i8, npts);
+    for (i32 i = 0; i < npts; ++i) {
+        vs[i].x = 0xAA;
+        vs[i].y = 0xBB;
+        vs[i].z = 0xCC;
+        vs[i].w = 0xDD;
+    }
+    arenaPopArray(&arena, vec4i8, npts);
+
+    printf("Memory Dump: %d bytes allocated.\n", N);
+    printf("%p: ", store);
+    for (i32 i = 0; i < N; ++i) {
+        if(i % 8 == 0 && i != 0) {
+            printf("\n");
+            printf("%p: ", &store[i]);
+        }
+        printf("%02x ", store[i]);
+    }
+    arenaClear(&arena);
+}
+
+int main(int argc, char *argv[]) {
+    // hkArray_test();
+    // hkList_test();
+    // hkDList_test();
+    // hkQueue_test();
+    // hkStack_test();
+    Arena_test();
     // TODO: fix code gen for external files
     // for this to work, we need to read all the included files
     // compile_commands.json should be enough...

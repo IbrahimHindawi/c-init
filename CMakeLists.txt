@@ -12,8 +12,8 @@ add_executable(${PROJECT_NAME}
     src/fileops.c
     src/Component.c
 )
-include_directories(src/)
 add_subdirectory(extern)
+include_directories(src/)
 include_directories(extern/haikal/src)
 include_directories(extern/haikal/src/meta/gen)
 
