@@ -56,3 +56,5 @@ build/
 .cache/
 vimsess
 scripts/psClang
+
+s.nv

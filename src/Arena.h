@@ -1,3 +1,4 @@
+#include <core.h>
 #define N 1024
 u8 store[N];
 
@@ -5,6 +6,13 @@ structdef(Arena) {
     u8 *mem;
     u8 *head;
     u8 *tail;
+};
+
+typedef struct hkArray_Node hkArray_Node;
+structdef(Node) {
+    i32 length;
+    // Node *nodes;
+    hkArray_Node *nodes;
 };
 
 void arenaInit(Arena *arena, u8 *mem) {

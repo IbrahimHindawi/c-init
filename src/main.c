@@ -52,6 +52,18 @@ void hkArray_test() {
     //haikal@hkArray:i8
     hkArray_i8 arr = hkArray_i8_create(8);
     hkArray_i8_destroy(&arr);
+
+    //haikal@hkArray:Node
+    Node rootnode = {
+        .length = 10,
+        .nodes = malloc(sizeof(Node)),
+    };
+    *rootnode.nodes = hkArray_Node_create(rootnode.length);
+    // rootnode.length = 4;
+    // hkArray_Node nodearray = hkArray_Node_create(rootnode.length);
+    // rootnode.nodes = nodearray.data;
+    // hkArray_Node_append(&nodearray, (Node){.length = 12});
+    // rootnode.nodes[2] = (Node){.length = 12};
 }
 
 void hkList_test() {
@@ -248,7 +260,7 @@ void Arena_test() {
 }
 
 int main(int argc, char *argv[]) {
-    // hkArray_test();
+    hkArray_test();
     // hkList_test();
     // hkDList_test();
     // hkQueue_test();
