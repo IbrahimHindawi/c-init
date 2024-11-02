@@ -39,17 +39,26 @@ void hkArray_test() {
     hkArray_i8_destroy(&string);
 
     //haikal@hkArray:vec3:s
-    hkArray_vec3 vectors = hkArray_vec3_create(21);
+    hkArray_vec3 vectors = hkArray_vec3_create(10);
     for (int i = 0; i < vectors.length; ++i) {
         vectors.data[i].x = 1.0f;
         vectors.data[i].y = (f32)i;
         vectors.data[i].z = 3.141592f;
     }
-    for (int i = 0; i < vectors.length; ++i) { printf("vectors[%d] = {%f, %f, %f}\n", i, vectors.data[i].x, vectors.data[i].y, vectors.data[i].z); }
+    for (int i = 0; i < vectors.length; ++i) { 
+        printf("vectors[%d] = {%f, %f, %f}\n", i, vectors.data[i].x, vectors.data[i].y, vectors.data[i].z); 
+    }
     hkArray_vec3_destroy(&vectors);
 
     //haikal@hkArray:i8:p
-    hkArray_i8 arr = hkArray_i8_create(8);
+    hkArray_i8 arr = {0};
+    hkArray_i8_append(&arr, 127);
+    hkArray_i8_append(&arr, 23);
+    hkArray_i8_append(&arr, 11);
+    hkArray_i8_append(&arr, 8);
+    for (int i = 0; i < arr.length; ++i) { 
+        printf("arr[%d] = %d\n", i, arr.data[i]); 
+    }
     hkArray_i8_destroy(&arr);
 }
 
