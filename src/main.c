@@ -29,7 +29,7 @@
 // #include "Component.h"
 
 void hkArray_test() {
-    //haikal@hkArray:i8
+    //haikal@hkArray:i8:p
     hkArray_i8 string = hkArray_i8_create(27);
     for (int i = 0; i < string.length; ++i) {
         string.data[i] = 0b01100000 | i + 1;
@@ -38,37 +38,24 @@ void hkArray_test() {
     printf("string: %s\n", string.data);
     hkArray_i8_destroy(&string);
 
-    //haikal@hkArray:vec3
-    hkArray_vec3 *vectors = malloc(sizeof(hkArray_vec3));
-    *vectors = hkArray_vec3_create(21);
-    for (int i = 0; i < vectors->length; ++i) {
-        vectors->data[i].x = 1.0f;
-        vectors->data[i].y = (f32)i;
-        vectors->data[i].z = 3.141592f;
+    //haikal@hkArray:vec3:s
+    hkArray_vec3 vectors = hkArray_vec3_create(21);
+    for (int i = 0; i < vectors.length; ++i) {
+        vectors.data[i].x = 1.0f;
+        vectors.data[i].y = (f32)i;
+        vectors.data[i].z = 3.141592f;
     }
-    for (int i = 0; i < vectors->length; ++i) { printf("vectors[%d] = {%f, %f, %f}\n", i, vectors->data[i].x, vectors->data[i].y, vectors->data[i].z); }
-    hkArray_vec3_destroy(vectors);
+    for (int i = 0; i < vectors.length; ++i) { printf("vectors[%d] = {%f, %f, %f}\n", i, vectors.data[i].x, vectors.data[i].y, vectors.data[i].z); }
+    hkArray_vec3_destroy(&vectors);
 
-    //haikal@hkArray:i8
+    //haikal@hkArray:i8:p
     hkArray_i8 arr = hkArray_i8_create(8);
     hkArray_i8_destroy(&arr);
-
-    //haikal@hkArray:Node
-    Node rootnode = {
-        .length = 10,
-        .nodes = malloc(sizeof(Node)),
-    };
-    *rootnode.nodes = hkArray_Node_create(rootnode.length);
-    // rootnode.length = 4;
-    // hkArray_Node nodearray = hkArray_Node_create(rootnode.length);
-    // rootnode.nodes = nodearray.data;
-    // hkArray_Node_append(&nodearray, (Node){.length = 12});
-    // rootnode.nodes[2] = (Node){.length = 12};
 }
 
 void hkList_test() {
-    //haikal@hkNode:i32
-    //haikal@hkList:i32
+    //haikal@hkNode:i32:p
+    //haikal@hkList:i32:p
     hkList_i32 *loi = hkList_i32_create();
     hkNode_i32 *iter = NULL;
     hkNode_i32 *node = NULL;
@@ -87,8 +74,8 @@ void hkList_test() {
 }
 
 void hkDList_test() {
-    //haikal@hkBiNode:i32
-    //haikal@hkDList:i32
+    //haikal@hkBiNode:i32:p
+    //haikal@hkDList:i32:p
     hkDList_i32 *loi = hkDList_i32_create();
     hkBiNode_i32 *iter = NULL;
     hkBiNode_i32 *node = NULL;
@@ -107,7 +94,7 @@ void hkDList_test() {
 }
 
 void hkQueue_test() {
-    //haikal@hkQueue:i32
+    //haikal@hkQueue:i32:p
     hkQueue_i32 *q = hkQueue_i32_create();
     hkQueue_i32_print(q);
     hkQueue_i32_enqueue(q, 0);
@@ -148,7 +135,7 @@ void hkQueue_test() {
 }
 
 void hkStack_test() {
-    //haikal@hkStack:i32
+    //haikal@hkStack:i32:p
     hkStack_i32 *stack = hkStack_i32_create();
     hkNode_i32 *node = NULL;
     hkStack_i32_push(stack, 32);
@@ -210,9 +197,9 @@ void Arena_test() {
     }
     printf("\n");
 
-    i8 *str0 = strAlloc(&arena, "close to you");
-    i8 *str1 = strAlloc(&arena, "close to you");
-    i8 *str2 = strAlloc(&arena, "close to you");
+    i8 *str0 = strAlloc(&arena, "this is a te");
+    i8 *str1 = strAlloc(&arena, "st string to");
+    i8 *str2 = strAlloc(&arena, "alloc bytes.");
     printf("%s\n", str0);
     printf("%s\n", str1);
     printf("%s\n", str2);
@@ -265,7 +252,7 @@ int main(int argc, char *argv[]) {
     // hkDList_test();
     // hkQueue_test();
     // hkStack_test();
-    Arena_test();
+    // Arena_test();
     // TODO: fix code gen for external files
     // for this to work, we need to read all the included files
     // compile_commands.json should be enough...

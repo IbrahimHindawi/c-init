@@ -14,7 +14,9 @@ add_executable(${PROJECT_NAME}
 )
 add_subdirectory(extern)
 include_directories(src/)
+# <core.h>
 include_directories(extern/haikal/src)
+# final code gen output
 include_directories(extern/haikal/src/meta/gen)
 
 # find_package(cglm CONFIG REQUIRED)
