@@ -4,6 +4,7 @@
 #include <Arena.h>
 
 #include "vec3.h"
+#include "TypeX.c"
 
 #define HKARRAY_IMPL
 #include <hkArray.h>
@@ -26,7 +27,11 @@
 #define HKSTACK_IMPL
 #include <hkStack.h>
 
+#include <hkHashMap.h>
+
 // #include "Component.h"
+
+// haikal@hkHashMap:i32:p
 
 void hkArray_test() {
     //haikal@hkArray:i8:p
@@ -176,6 +181,25 @@ void hkStack_test() {
     hkStack_i32_destroy(&stack);
 }
 
+void hkHashMap_test() {
+    hkHashMap_i32 *hashmap = hkHashMap_i32_create();
+    if (!hashmap) {
+        printf("nomem\n");
+        exit(-1);
+    }
+    i32 *v = malloc(sizeof(i32));
+    *v = 3;
+    if (!hkHashMap_i32_set(hashmap, "dog", v)) {
+        printf("nomem\n");
+        exit(-1);
+    }
+    i32 *result = hkHashMap_i32_get(hashmap, "dog");
+    if (!result) {
+        // ...
+    }
+    printf("key = %s, val = %d\n", "dog", *result);
+}
+
 structdef(Payload) {
     i32 id;
     i32 mx;
@@ -257,6 +281,14 @@ void Arena_test() {
 
 int main(int argc, char *argv[]) {
     hkArray_test();
+    hkHashMap_test();
+
+    TypeX *tx = malloc(sizeof(TypeX));
+    TypeXCreate(tx, 666, "Hades");
+    printf("tx = { %d, %s }\n", tx->id, tx->name);
+    TypeX *tx2 = TypeXCreate2(777, "Zeus");
+    printf("tx2 = { %d, %s }\n", tx2->id, tx2->name);
+
     // hkList_test();
     // hkDList_test();
     // hkQueue_test();
