@@ -32,6 +32,7 @@
 // #include "Component.h"
 
 // haikal@hkHashMap:i32:p
+// haikal@hkHashMap:vec3:s
 
 void hkArray_test() {
     //haikal@hkArray:i8:p
@@ -187,17 +188,39 @@ void hkHashMap_test() {
         printf("nomem\n");
         exit(-1);
     }
-    i32 *v = malloc(sizeof(i32));
-    *v = 3;
-    if (!hkHashMap_i32_set(hashmap, "dog", v)) {
+    if (!hkHashMap_i32_set(hashmap, "dog", 3)) {
         printf("nomem\n");
         exit(-1);
     }
     i32 *result = hkHashMap_i32_get(hashmap, "dog");
-    if (!result) {
-        // ...
+    if (result) {
+        printf("key = %s, val = %d\n", "dog", *result);
     }
-    printf("key = %s, val = %d\n", "dog", *result);
+    hkHashMap_i32_destroy(hashmap);
+
+    hkHashMap_vec3 *hashmapvec = hkHashMap_vec3_create();
+    if (!hashmapvec) {
+        printf("nomem\n");
+        exit(-1);
+    }
+    if (!hkHashMap_vec3_set(hashmapvec, "dog", (vec3){1.f, 0.f, 0.f})) {
+        printf("nomem\n");
+        exit(-1);
+    }
+    if (!hkHashMap_vec3_set(hashmapvec, "frog", (vec3){0.f, 1.f, 0.f})) {
+        printf("nomem\n");
+        exit(-1);
+    }
+    vec3 *resultvec = hkHashMap_vec3_get(hashmapvec, "dog");
+    if (resultvec) {
+        printf("key = %s, val = {%f, %f, %f}\n", "dog", resultvec->x, resultvec->y, resultvec->z);
+    }
+    printf("hash iterator...\n");
+    hkHashMapIterator_vec3 itvec = hkHashMapIterator_vec3_create(hashmapvec);
+    while (hkHashMapIterator_vec3_next(&itvec)) {
+        printf("key = %s, val = {%f, %f, %f}\n", itvec.key, itvec.val.x, itvec.val.y, itvec.val.z);
+    }
+    hkHashMap_vec3_destroy(hashmapvec);
 }
 
 structdef(Payload) {
@@ -282,18 +305,18 @@ void Arena_test() {
 int main(int argc, char *argv[]) {
     hkArray_test();
     hkHashMap_test();
-
-    TypeX *tx = malloc(sizeof(TypeX));
-    TypeXCreate(tx, 666, "Hades");
-    printf("tx = { %d, %s }\n", tx->id, tx->name);
-    TypeX *tx2 = TypeXCreate2(777, "Zeus");
-    printf("tx2 = { %d, %s }\n", tx2->id, tx2->name);
-
     // hkList_test();
     // hkDList_test();
     // hkQueue_test();
     // hkStack_test();
     // Arena_test();
+
+    // TypeX *tx = malloc(sizeof(TypeX));
+    // TypeXCreate(tx, 666, "Hades");
+    // printf("tx = { %d, %s }\n", tx->id, tx->name);
+    // TypeX *tx2 = TypeXCreate2(777, "Zeus");
+    // printf("tx2 = { %d, %s }\n", tx2->id, tx2->name);
+
     // TODO: fix code gen for external files
     // for this to work, we need to read all the included files
     // compile_commands.json should be enough...
