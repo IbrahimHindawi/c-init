@@ -184,6 +184,7 @@ void hkStack_test() {
 
 void hkHashMap_test() {
     hkHashMap_i32 *hashmap = hkHashMap_i32_create();
+    printf("hashmap length = %llu\n", hkHashMap_i32_length(hashmap));
     if (!hashmap) {
         printf("nomem\n");
         exit(-1);
@@ -196,9 +197,11 @@ void hkHashMap_test() {
     if (result) {
         printf("key = %s, val = %d\n", "dog", *result);
     }
+    printf("hashmap length = %llu\n", hkHashMap_i32_length(hashmap));
     hkHashMap_i32_destroy(hashmap);
 
     hkHashMap_vec3 *hashmapvec = hkHashMap_vec3_create();
+    printf("hashmapvec length = %llu\n", hkHashMap_vec3_length(hashmapvec));
     if (!hashmapvec) {
         printf("nomem\n");
         exit(-1);
@@ -207,14 +210,17 @@ void hkHashMap_test() {
         printf("nomem\n");
         exit(-1);
     }
+    printf("hashmapvec length = %llu\n", hkHashMap_vec3_length(hashmapvec));
     if (!hkHashMap_vec3_set(hashmapvec, "frog", (vec3){0.f, 1.f, 0.f})) {
         printf("nomem\n");
         exit(-1);
     }
+    printf("hashmapvec length = %llu\n", hkHashMap_vec3_length(hashmapvec));
     vec3 *resultvec = hkHashMap_vec3_get(hashmapvec, "dog");
     if (resultvec) {
         printf("key = %s, val = {%f, %f, %f}\n", "dog", resultvec->x, resultvec->y, resultvec->z);
     }
+    printf("hashmapvec length = %llu\n", hkHashMap_vec3_length(hashmapvec));
     printf("hash iterator...\n");
     hkHashMapIterator_vec3 itvec = hkHashMapIterator_vec3_create(hashmapvec);
     while (hkHashMapIterator_vec3_next(&itvec)) {
