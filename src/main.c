@@ -9,18 +9,21 @@
 // #include "TypeX.c"
 // #include "hkArray_TypeX.c"
 
-// codegen note:
-// for containers that have value types eg `T`, 
-// the type must be included before the headers.
+// monomorphization codegen limitations:
+// for containers that have value types eg `T`,
+// the type must be included before the generated header.
 // this is because the container expects to know the type in it's struct.
+// Warning: cannot be recursive type
 //
-// for containers that have pointer types eg `T *`, 
-// the type can be included before or after the headers.
+// for containers that have pointer types eg `T *`,
+// the type can be included before or after the generated header.
 // this is because the container has `T` forward declared.
+// Warning: can be recursive type
 //
-// for types that include a container eg `struct T { hkArray_T arr; };`
-// the type must be included after the header.
+// for types that include a container of themselves eg `struct T { hkArray_T arr; };`
+// the type must be included after the generated header.
 // this is because the type needs to know the container definition.
+// Warning: can be recursive type with `T *` but not `T`
 
 #include "vec3.h"
 
