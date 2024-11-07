@@ -4,7 +4,11 @@
 #include <Arena.h>
 
 #include "vec3.h"
+
+#include "hkArray_TypeX.h"
+#include "TypeX.h"
 #include "TypeX.c"
+#include "hkArray_TypeX.c"
 
 #define HKARRAY_IMPL
 #include <hkArray.h>
@@ -317,11 +321,14 @@ int main(int argc, char *argv[]) {
     // hkStack_test();
     // Arena_test();
 
-    // TypeX *tx = malloc(sizeof(TypeX));
-    // TypeXCreate(tx, 666, "Hades");
-    // printf("tx = { %d, %s }\n", tx->id, tx->name);
-    // TypeX *tx2 = TypeXCreate2(777, "Zeus");
-    // printf("tx2 = { %d, %s }\n", tx2->id, tx2->name);
+    TypeX *tx = malloc(sizeof(TypeX));
+    TypeXCreate(tx, 666, "Hades");
+    printf("tx = { %d, %s }\n", tx->id, tx->name);
+    TypeX *tx2 = TypeXCreate2(777, "Zeus");
+    printf("tx2 = { %d, %s }\n", tx2->id, tx2->name);
+
+    hkArray_TypeX arr = {0};
+    hkArray_TypeX_reserve(&arr, 16);
 
     // TODO: fix code gen for external files
     // for this to work, we need to read all the included files

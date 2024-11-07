@@ -1,4 +1,6 @@
-#include "TypeX.h"
+#include <core.h>
+
+structdecl(TypeX);
 
 void TypeXCreate(TypeX *tx, u32 id, char *name) {
     tx->id = id;
