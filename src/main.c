@@ -3,42 +3,55 @@
 
 #include <Arena.h>
 
+
+// #include "hkArray_TypeX.h"
+// #include "TypeX.h"
+// #include "TypeX.c"
+// #include "hkArray_TypeX.c"
+
+// codegen note:
+// for containers that have value types eg `T`, 
+// the type must be included before the headers.
+// this is because the container expects to know the type in it's struct.
+//
+// for containers that have pointer types eg `T *`, 
+// the type can be included before or after the headers.
+// this is because the container has `T` forward declared.
+//
+// for types that include a container eg `struct T { hkArray_T arr; };`
+// the type must be included after the header.
+// this is because the type needs to know the container definition.
+
 #include "vec3.h"
 
-#include "hkArray_TypeX.h"
-#include "TypeX.h"
-#include "TypeX.c"
-#include "hkArray_TypeX.c"
-
-#define HKARRAY_IMPL
 #include <hkArray.h>
-
-#define HKNODE_IMPL
-#include <hkNode.h>
-
-#define HKLIST_IMPL
-#include <hkList.h>
-
-#define HKBINODE_IMPL
 #include <hkBiNode.h>
-
-#define HKDLIST_IMPL
 #include <hkDList.h>
-
-#define HKQUEUE_IMPL
+#include <hkHashMap.h>
+#include <hkList.h>
+#include <hkNode.h>
+#include <hkStack.h>
 #include <hkQueue.h>
 
-#define HKSTACK_IMPL
-#include <hkStack.h>
+// haikal@hkArray:Rec:s
+#include "Rec.h"
 
-#include <hkHashMap.h>
+#include <hkArray.c>
+#include <hkBiNode.c>
+#include <hkDList.c>
+#include <hkHashMap.c>
+#include <hkList.c>
+#include <hkNode.c>
+#include <hkStack.c>
+#include <hkQueue.c>
 
-// #include "Component.h"
+#include "Component.h"
 
 // haikal@hkHashMap:i32:p
 // haikal@hkHashMap:vec3:s
 
 void hkArray_test() {
+    printf("hkArray_test:\n");
     //haikal@hkArray:i8:p
     hkArray_i8 string = hkArray_i8_create(27);
     for (int i = 0; i < string.length; ++i) {
@@ -60,7 +73,6 @@ void hkArray_test() {
     }
     hkArray_vec3_destroy(&vectors);
 
-    //haikal@hkArray:i8:p
     hkArray_i8 arr = {0};
     hkArray_i8_append(&arr, 127);
     hkArray_i8_append(&arr, 23);
@@ -70,11 +82,13 @@ void hkArray_test() {
         printf("arr[%d] = %d\n", i, arr.data[i]); 
     }
     hkArray_i8_destroy(&arr);
+    printf("\n");
 }
 
 void hkList_test() {
-    //haikal@hkNode:i32:p
-    //haikal@hkList:i32:p
+    printf("hkList_test:\n");
+    // haikal@hkNode:i32:p
+    // haikal@hkList:i32:p
     hkList_i32 *loi = hkList_i32_create();
     hkNode_i32 *iter = NULL;
     hkNode_i32 *node = NULL;
@@ -90,13 +104,14 @@ void hkList_test() {
     node = hkList_i32_remove_at(loi, 1); if (node) { hkNode_i32_destroy(&node); }
     hkList_i32_print(loi);
     hkList_i32_destroy(&loi);
+    printf("\n");
 }
 
 void hkDList_test() {
-    //haikal@hkBiNode:i32:p
-    //haikal@hkDList:i32:p
+    printf("hkDList_test:\n");
+    // haikal@hkBiNode:i32:p
+    // haikal@hkDList:i32:p
     hkDList_i32 *loi = hkDList_i32_create();
-    hkBiNode_i32 *iter = NULL;
     hkBiNode_i32 *node = NULL;
     hkDList_i32_append(loi, 11);
     hkDList_i32_append(loi, 22);
@@ -110,10 +125,12 @@ void hkDList_test() {
     node = hkDList_i32_remove_at(loi, 1); if (node) { hkBiNode_i32_destroy(&node); }
     hkDList_i32_print(loi);
     hkDList_i32_destroy(&loi);
+    printf("\n");
 }
 
 void hkQueue_test() {
-    //haikal@hkQueue:i32:p
+    printf("hkQueue_test:\n");
+    // haikal@hkQueue:i32:p
     hkQueue_i32 *q = hkQueue_i32_create();
     hkQueue_i32_print(q);
     hkQueue_i32_enqueue(q, 0);
@@ -151,10 +168,12 @@ void hkQueue_test() {
     hkQueue_i32_print(q);
 
     hkQueue_i32_destroy(&q);
+    printf("\n");
 }
 
 void hkStack_test() {
-    //haikal@hkStack:i32:p
+    printf("hkStack_test:\n");
+    // haikal@hkStack:i32:p
     hkStack_i32 *stack = hkStack_i32_create();
     hkNode_i32 *node = NULL;
     hkStack_i32_push(stack, 32);
@@ -184,9 +203,11 @@ void hkStack_test() {
     hkStack_i32_print(stack);
 
     hkStack_i32_destroy(&stack);
+    printf("\n");
 }
 
 void hkHashMap_test() {
+    printf("hkHashMap_test:\n");
     hkHashMap_i32 *hashmap = hkHashMap_i32_create();
     printf("hashmap length = %llu\n", hkHashMap_i32_length(hashmap));
     if (!hashmap) {
@@ -231,6 +252,7 @@ void hkHashMap_test() {
         printf("key = %s, val = {%f, %f, %f}\n", itvec.key, itvec.val.x, itvec.val.y, itvec.val.z);
     }
     hkHashMap_vec3_destroy(hashmapvec);
+    printf("\n");
 }
 
 structdef(Payload) {
@@ -315,20 +337,20 @@ void Arena_test() {
 int main(int argc, char *argv[]) {
     hkArray_test();
     hkHashMap_test();
-    // hkList_test();
-    // hkDList_test();
-    // hkQueue_test();
-    // hkStack_test();
-    // Arena_test();
+    hkList_test();
+    hkDList_test();
+    hkQueue_test();
+    hkStack_test();
+    Arena_test();
 
-    TypeX *tx = malloc(sizeof(TypeX));
-    TypeXCreate(tx, 666, "Hades");
-    printf("tx = { %d, %s }\n", tx->id, tx->name);
-    TypeX *tx2 = TypeXCreate2(777, "Zeus");
-    printf("tx2 = { %d, %s }\n", tx2->id, tx2->name);
+    // TypeX *tx = malloc(sizeof(TypeX));
+    // TypeXCreate(tx, 666, "Hades");
+    // printf("tx = { %d, %s }\n", tx->id, tx->name);
+    // TypeX *tx2 = TypeXCreate2(777, "Zeus");
+    // printf("tx2 = { %d, %s }\n", tx2->id, tx2->name);
 
-    hkArray_TypeX arr = {0};
-    hkArray_TypeX_reserve(&arr, 16);
+    // hkArray_TypeX arr = {0};
+    // hkArray_TypeX_reserve(&arr, 16);
 
     // TODO: fix code gen for external files
     // for this to work, we need to read all the included files
