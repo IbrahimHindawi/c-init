@@ -27,14 +27,15 @@
 #include <hkArray.h>
 #include <hkBiNode.h>
 #include <hkDList.h>
-#include <hkHashMap.h>
 #include <hkList.h>
 #include <hkNode.h>
 #include <hkStack.h>
 #include <hkQueue.h>
 
 // haikal@hkArray:Rec:s
+// haikal@hkHashMap:Rec:s
 #include "Rec.h"
+#include <hkHashMap.h>
 
 #include <hkArray.c>
 #include <hkBiNode.c>
