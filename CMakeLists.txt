@@ -9,6 +9,7 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 
 add_executable(${PROJECT_NAME}
     src/main.c
+    src/StateMachine/statemachine.c
     src/fileops.c
     src/Component.c
 )
