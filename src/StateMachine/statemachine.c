@@ -1,4 +1,6 @@
 #include "statemachine.h"
+#include "fault.h"
+
 // @see https://github.com/endurodave/C_StateMachine
 //---------------------------------------------------------------------------------------------------
 // Generates an external event. Called once per external event 
@@ -31,7 +33,7 @@ void statemachineExternalEvent_(StateMachine* statemachine, const StateMachineIm
 // Generates an internal event. Called from within a state 
 // function to transition to a new state
 void statemachineInternalEvent_(StateMachine* statemachine, u8 newstate, void* eventdata) {
-    // ASSERT_TRUE(statemachine);
+    assert_true(statemachine);
 
     statemachine->eventdata = eventdata;
     statemachine->eventgenerated = true;
@@ -42,14 +44,14 @@ void statemachineInternalEvent_(StateMachine* statemachine, u8 newstate, void* e
 void statemachineStateEngine_(StateMachine* statemachine, const StateMachineImmut* statemachineimmut) {
     void* datatemp = NULL;
 
-    // ASSERT_TRUE(statemachine);
-    // ASSERT_TRUE(statemachineimmut);
+    assert_true(statemachine);
+    assert_true(statemachineimmut);
 
     // While events are being generated keep executing states
     while (statemachine->eventgenerated)
     {
         // Error check that the new state is valid before proceeding
-        // ASSERT_TRUE(statemachine->newstate < statemachineimmut->maxStates);
+        assert_true(statemachine->newstate < statemachineimmut->maxstates);
 
         // Get the pointers from the state map
         StateProc state = statemachineimmut->statemap[statemachine->newstate].stateproc;
@@ -67,7 +69,7 @@ void statemachineStateEngine_(StateMachine* statemachine, const StateMachineImmu
         statemachine->currentstate = statemachine->newstate;
 
         // Execute the state action passing in event data
-        // ASSERT_TRUE(state != NULL);
+        assert_true(state != NULL);
         state(statemachine, datatemp);
 
         // If event data was used, then delete it
@@ -83,14 +85,14 @@ void statemachineStateEngineEx_(StateMachine* statemachine, const StateMachineIm
     bool guardresult = true;
     void *datatemp = NULL;
 
-    // ASSERT_TRUE(statemachine);
-    // ASSERT_TRUE(statemachineimmut);
+    assert_true(statemachine);
+    assert_true(statemachineimmut);
 
     // While events are being generated keep executing states
     while (statemachine->eventgenerated)
     {
         // Error check that the new state is valid before proceeding
-        // ASSERT_TRUE(statemachine->newstate < statemachineimmut->maxStates);
+        assert_true(statemachine->newstate < statemachineimmut->maxstates);
 
         // Get the pointers from the extended state map
         StateProc state = statemachineimmut->statemapex[statemachine->newstate].stateproc;
@@ -126,14 +128,14 @@ void statemachineStateEngineEx_(StateMachine* statemachine, const StateMachineIm
                 }
 
                 // Ensure exit/entry actions didn't call SM_InternalEvent by accident 
-                // ASSERT_TRUE(statemachine->eventgenerated == false);
+                assert_true(statemachine->eventgenerated == false);
             }
 
             // Switch to the new current state
             statemachine->currentstate = statemachine->newstate;
 
             // Execute the state action passing in event data
-            // ASSERT_TRUE(state != NULL);
+            assert_true(state != NULL);
             state(statemachine, datatemp);
         }
 

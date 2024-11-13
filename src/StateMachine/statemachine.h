@@ -1,3 +1,4 @@
+#pragma once
 #include <core.h>
 
 enum {
@@ -9,7 +10,7 @@ typedef void NoEventData;
 
 structdecl(StateMachine);
 typedef void (*StateProc)(StateMachine *statemachine, void *eventdata);
-typedef void (*GuardProc)(StateMachine *statemachine, void *eventdata);
+typedef bool (*GuardProc)(StateMachine *statemachine, void *eventdata);
 typedef void (*EntryProc)(StateMachine *statemachine, void *eventdata);
 typedef void (*ExitProc)(StateMachine *statemachine);
 
