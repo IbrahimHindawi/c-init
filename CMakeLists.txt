@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-set(ProjectNameParam "DefaultProject" CACHE STRING "Command line argument containing the project name.")
-project(${ProjectNameParam} VERSION 1.0 LANGUAGES C)
+project(c-init VERSION 1.0 LANGUAGES C)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_C_STANDARD 99)

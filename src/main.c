@@ -37,9 +37,15 @@
 #include <hkStack.h>
 #include <hkQueue.h>
 
-// haikal@hkArray:Rec:s
-// haikal@hkHashMap:Rec:s
-#include "Rec.h"
+// @hkArray:Rec:s
+// @hkHashMap:Rec:s
+// haikal@hkHashMap:i32:p
+// haikal@hkHashMap:vec3:s
+
+// haikal@hkHashMap:hkArray_i8_ptr:p
+typedef hkArray_i8 *hkArray_i8_ptr;
+
+// #include "Rec.h"
 #include <hkHashMap.h>
 
 #include <hkArray.c>
@@ -53,31 +59,31 @@
 
 #include "Component.h"
 
-// haikal@hkHashMap:i32:p
-// haikal@hkHashMap:vec3:s
 
 void hkArray_test() {
     printf("hkArray_test:\n");
     //haikal@hkArray:i8:p
-    hkArray_i8 string = hkArray_i8_create(27);
-    for (int i = 0; i < string.length; ++i) {
-        string.data[i] = 0b01100000 | i + 1;
+    hkArray_i8 *string = hkArray_i8_create();
+    hkArray_i8_reserve(string, 27);
+    for (int i = 0; i < string->length; ++i) {
+        string->data[i] = 0b01100000 | i + 1;
     }
-    string.data[string.length - 1] = '\0';
-    printf("string: %s\n", string.data);
-    hkArray_i8_destroy(&string);
+    string->data[string->length - 1] = '\0';
+    printf("string: %s\n", string->data);
+    hkArray_i8_destroy(string);
 
     //haikal@hkArray:vec3:s
-    hkArray_vec3 vectors = hkArray_vec3_create(10);
-    for (int i = 0; i < vectors.length; ++i) {
-        vectors.data[i].x = 1.0f;
-        vectors.data[i].y = (f32)i;
-        vectors.data[i].z = 3.141592f;
+    hkArray_vec3 *vectors = hkArray_vec3_create();
+    hkArray_vec3_reserve(vectors, 10);
+    for (int i = 0; i < vectors->length; ++i) {
+        vectors->data[i].x = 1.0f;
+        vectors->data[i].y = (f32)i;
+        vectors->data[i].z = 3.141592f;
     }
-    for (int i = 0; i < vectors.length; ++i) { 
-        printf("vectors[%d] = {%f, %f, %f}\n", i, vectors.data[i].x, vectors.data[i].y, vectors.data[i].z); 
+    for (int i = 0; i < vectors->length; ++i) { 
+        printf("vectors[%d] = {%f, %f, %f}\n", i, vectors->data[i].x, vectors->data[i].y, vectors->data[i].z); 
     }
-    hkArray_vec3_destroy(&vectors);
+    hkArray_vec3_destroy(vectors);
 
     hkArray_i8 arr = {0};
     hkArray_i8_append(&arr, 127);
@@ -258,6 +264,28 @@ void hkHashMap_test() {
         printf("key = %s, val = {%f, %f, %f}\n", itvec.key, itvec.val.x, itvec.val.y, itvec.val.z);
     }
     hkHashMap_vec3_destroy(hashmapvec);
+
+    hkHashMap_hkArray_i8_ptr *hashmaparrayi8 = hkHashMap_hkArray_i8_ptr_create();
+    printf("hashmaparrayi8 length = %llu\n", hkHashMap_hkArray_i8_ptr_length(hashmaparrayi8));
+    if (!hashmaparrayi8) {
+        printf("nomem\n");
+        exit(-1);
+    }
+    hkArray_i8_ptr arr = hkArray_i8_create();
+    if (!hkHashMap_hkArray_i8_ptr_set(hashmaparrayi8, "dog", arr)) {
+        printf("nomem\n");
+        exit(-1);
+    }
+    hkArray_i8_ptr *array = hkHashMap_hkArray_i8_ptr_get(hashmaparrayi8, "dog");
+    if (!array) {
+        printf("array \"dog\" not found!\n");
+    }
+    hkArray_i8_reserve(*array, 27);
+    printf("key = %s, val = %p\n", "dog", *array);
+    printf("hashmaparrayi8 length = %llu\n", hkHashMap_hkArray_i8_ptr_length(hashmaparrayi8));
+    // iterate to free arrays
+    hkArray_i8_destroy(*array);
+    hkHashMap_hkArray_i8_ptr_destroy(hashmaparrayi8);
     printf("\n");
 }
 
@@ -274,9 +302,7 @@ void Arena_test() {
     arenaInit(&arena, store);
 
     const i32 len = 4;
-    const i32 els = sizeof(f32);
-    const i32 allocsize = els * len;
-    f32 *nums = arenaPush(&arena, allocsize);
+    f32 *nums = arenaPushArray(&arena, i32, len);
     for (i32 i = 0; i < len; ++i) {
         nums[i] = (f32)(i + 1);
     }
@@ -286,7 +312,7 @@ void Arena_test() {
     printf("\n");
 
     u8 *ptr = (u8 *)nums;
-    for (i32 i = 0; i < allocsize; ++i) {
+    for (i32 i = 0; i < sizeof(f32) * len; ++i) {
         printf("%02x ", ptr[i]);
     }
     printf("\n");
@@ -353,12 +379,12 @@ void StateMachine_test() {
 int main(int argc, char *argv[]) {
     hkArray_test();
     hkHashMap_test();
-    hkList_test();
-    hkDList_test();
+    // hkList_test();
+    // hkDList_test();
     // hkQueue_test();
     // hkStack_test();
     // Arena_test();
-    StateMachine_test();
+    // StateMachine_test();
 
     // i32 currentspeed = statemachineGet(motor1statemachine, motorGetSpeed);
     // statemachineEvent(motor1statemachine, motorHalt, NULL);

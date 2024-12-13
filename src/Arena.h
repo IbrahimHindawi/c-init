@@ -4,8 +4,8 @@ u8 store[N];
 
 structdef(Arena) {
     u8 *mem;
-    u8 *head;
-    u8 *tail;
+    u8 *cursor;
+    usize used;
 };
 
 typedef struct hkArray_Node hkArray_Node;
@@ -17,45 +17,45 @@ structdef(Node) {
 
 void arenaInit(Arena *arena, u8 *mem) {
     arena->mem = mem;
-    arena->head = arena->mem;
-    arena->tail = arena->mem;
+    arena->cursor = arena->mem;
+    arena->used = 0;
 }
 
-void *arenaPush(Arena *arena, u64 size) {
-    if ((arena->tail + size) - arena->mem > N) {
+void *arenaPush(Arena *arena, u64 allocsize) {
+    if (arena->used + allocsize > N) {
         printf("Memory allocation failure! Maximum memory reached!\n");
         exit(-1);
     }
-    arena->head = arena->tail;
-    arena->tail += size;
-    return arena->head;
+    arena->cursor += allocsize;
+    return arena->cursor;
 }
 
-void *arenaPushZero(Arena *arena, u64 size) {
-    arena->head = arena->tail;
-    arena->tail += size;
-    memcpy(arena->head, 0, size);
-    return arena->head;
+void *arenaPushZero(Arena *arena, u64 allocsize) {
+    if (arena->used + allocsize > N) {
+        printf("Memory allocation failure! Maximum memory reached!\n");
+        exit(-1);
+    }
+    arena->cursor += allocsize;
+    memcpy(arena->cursor, 0, allocsize);
+    return arena->cursor;
 }
 
-void *arenaRealloc(Arena *arena, u64 size) {
-    arena->tail = arena->head;
-    return arenaPush(arena, size);
-}
+// void *arenaRealloc(Arena *arena, u64 allocsize) {
+//     arena->tail = arena->cursor;
+//     return arenaPush(arena, allocsize);
+// }
 
 void arenaClear(Arena *arena) {
-    arena->head = arena->mem;
-    arena->tail = arena->mem;
+    arena->cursor = arena->mem;
 }
 
-void *arenaPop(Arena *arena, u64 size) {
-    arena->tail -= size;
-    arena->head = arena->tail;
-    return arena->head;
+void *arenaPop(Arena *arena, u64 allocsize) {
+    arena->cursor -= allocsize;
+    return arena->cursor;
 }
 
 void *arenaGetPos(Arena *arena) {
-    return arena->head;
+    return arena->cursor;
 }
 
 i8 *strAlloc(Arena *arena, i8 *input_str) {
