@@ -38,12 +38,13 @@
 // haikal@hkQueue:i32:p
 // haikal@hkStack:i32:p
 //---------------------------------------------------------------------------------------------------
+// haikal@hkArray:hkList_i32:s
 // haikal@hkArray:vec3:s
+// haikal@hkArray:Rec:s
 // haikal@hkHashMap:vec3:s
 // haikal@hkHashMap:Rec:s
 // haikal@hkHashMap:hkArray_i8:s
 // haikal@hkHashMap:hkArray_i32:s
-// haikal@hkArray:Rec:s
 
 #include "vec3.h"
 
@@ -104,21 +105,59 @@ void hkArray_test() {
 
 void hkList_test() {
     printf("hkList_test:\n");
-    hkList_i32 *loi = hkList_i32_create();
-    hkNode_i32 *iter = NULL;
+    hkList_i32 loi = {0};
     hkNode_i32 *node = NULL;
-    hkList_i32_append(loi, 11);
-    hkList_i32_append(loi, 22);
-    hkList_i32_append(loi, 33);
-    hkList_i32_append(loi, 44);
-    hkList_i32_print(loi);
-    node = hkList_i32_remove_at(loi, 0); if (node) { hkNode_i32_destroy(&node); }
-    hkList_i32_print(loi);
-    node = hkList_i32_remove_at(loi, 1); if (node) { hkNode_i32_destroy(&node); }
-    hkList_i32_print(loi);
-    node = hkList_i32_remove_at(loi, 1); if (node) { hkNode_i32_destroy(&node); }
-    hkList_i32_print(loi);
+    hkList_i32_append(&loi, 11);
+    hkList_i32_append(&loi, 22);
+    hkList_i32_append(&loi, 33);
+    hkList_i32_append(&loi, 44);
+    hkList_i32_print(&loi);
+
+    node = hkList_i32_remove_at(&loi, 0);
+    if (node) {
+        hkNode_i32_destroy(&node);
+    }
+    hkList_i32_print(&loi);
+    node = hkList_i32_remove_at(&loi, 1);
+    if (node) {
+        hkNode_i32_destroy(&node);
+    }
+    hkList_i32_print(&loi);
+    node = hkList_i32_remove_at(&loi, 1);
+    if (node) {
+        hkNode_i32_destroy(&node);
+    }
+    hkList_i32_print(&loi);
+    node = hkList_i32_remove_at(&loi, 0);
+    if (node) {
+        hkNode_i32_destroy(&node);
+    }
+    hkList_i32_print(&loi);
+    if (loi.length == 0) {
+        printf("list is empty\n");
+    }
     hkList_i32_destroy(&loi);
+
+    printf("hkArray_hkList_i32:\n");
+    hkArray_hkList_i32 arrayoflists = {0};
+    hkList_i32 *list = hkArray_hkList_i32_append(&arrayoflists, (hkList_i32) {0});
+    if (!list) { printf("list invalid!\n"); }
+    hkList_i32_append(list, 32);
+    hkList_i32_append(list, 22);
+    hkList_i32_append(list, 12);
+    hkList_i32_print(list);
+    list = hkArray_hkList_i32_append(&arrayoflists, (hkList_i32) {0});
+    if (!list) { printf("list invalid!\n"); }
+    hkList_i32_append(list, 16);
+    hkList_i32_append(list, 26);
+    hkList_i32_append(list, 36);
+    hkList_i32_print(list);
+    printf("array.length = %llu\n", arrayoflists.length);
+    for (i32 i = 0; i < arrayoflists.length; ++i) {
+        printf("list[%d] = \n", i);
+        hkList_i32 list = arrayoflists.data[i];
+        hkList_i32_print(&list);
+    }
     printf("\n");
 }
 
@@ -278,8 +317,12 @@ void hkHashMap_test() {
     }
     printf("key = %s, val = %p", "dog", resultarray);
     *resultarray = hkArray_i32_create(12);
-    for (i32 i = 0; i < 12; i++) { resultarray->data[i] = i * i; }
-    for (i32 i = 0; i < 12; i++) { printf("hkArray.data[%d] = %d\n", i, resultarray->data[i]); }
+    for (i32 i = 0; i < 12; i++) {
+        resultarray->data[i] = i * i;
+    }
+    for (i32 i = 0; i < 12; i++) {
+        printf("hkArray.data[%d] = %d\n", i, resultarray->data[i]);
+    }
     printf("hashmapvec length = %llu\n", hkHashMap_hkArray_i32_length(hashmaparray));
 
     printf("hash iterator...\n");
@@ -382,7 +425,7 @@ void StateMachine_test() {
 int main(int argc, char *argv[]) {
     hkArray_test();
     hkHashMap_test();
-    // hkList_test();
+    hkList_test();
     // hkDList_test();
     // hkQueue_test();
     // hkStack_test();
