@@ -12,6 +12,7 @@
 // #include "hkArray_TypeX.c"
 
 // monomorphization codegen limitations:
+//---------------------------------------------------------------------------------------------------
 // for containers that have value types eg `T`,
 // the type must be included before the generated header.
 // this is because the container expects to know the type in it's struct.
@@ -26,6 +27,23 @@
 // the type must be included after the generated header.
 // this is because the type needs to know the container definition.
 // Warning: can be recursive type with `T *` but not `T`
+//---------------------------------------------------------------------------------------------------
+// haikal@hkHashMap:i32:p
+// haikal@hkArray:i8:p
+// haikal@hkArray:i32:p
+// haikal@hkNode:i32:p
+// haikal@hkList:i32:p
+// haikal@hkBiNode:i32:p
+// haikal@hkDList:i32:p
+// haikal@hkQueue:i32:p
+// haikal@hkStack:i32:p
+//---------------------------------------------------------------------------------------------------
+// haikal@hkArray:vec3:s
+// haikal@hkHashMap:vec3:s
+// haikal@hkHashMap:Rec:s
+// haikal@hkHashMap:hkArray_i8:s
+// haikal@hkHashMap:hkArray_i32:s
+// haikal@hkArray:Rec:s
 
 #include "vec3.h"
 
@@ -37,8 +55,6 @@
 #include <hkStack.h>
 #include <hkQueue.h>
 
-// haikal@hkArray:Rec:s
-// haikal@hkHashMap:Rec:s
 #include "Rec.h"
 #include <hkHashMap.h>
 
@@ -53,12 +69,8 @@
 
 #include "Component.h"
 
-// haikal@hkHashMap:i32:p
-// haikal@hkHashMap:vec3:s
-
 void hkArray_test() {
     printf("hkArray_test:\n");
-    //haikal@hkArray:i8:p
     hkArray_i8 string = hkArray_i8_create(27);
     for (int i = 0; i < string.length; ++i) {
         string.data[i] = 0b01100000 | i + 1;
@@ -67,7 +79,6 @@ void hkArray_test() {
     printf("string: %s\n", string.data);
     hkArray_i8_destroy(&string);
 
-    //haikal@hkArray:vec3:s
     hkArray_vec3 vectors = hkArray_vec3_create(10);
     for (int i = 0; i < vectors.length; ++i) {
         vectors.data[i].x = 1.0f;
@@ -93,8 +104,6 @@ void hkArray_test() {
 
 void hkList_test() {
     printf("hkList_test:\n");
-    // haikal@hkNode:i32:p
-    // haikal@hkList:i32:p
     hkList_i32 *loi = hkList_i32_create();
     hkNode_i32 *iter = NULL;
     hkNode_i32 *node = NULL;
@@ -115,8 +124,6 @@ void hkList_test() {
 
 void hkDList_test() {
     printf("hkDList_test:\n");
-    // haikal@hkBiNode:i32:p
-    // haikal@hkDList:i32:p
     hkDList_i32 *loi = hkDList_i32_create();
     hkBiNode_i32 *node = NULL;
     hkDList_i32_append(loi, 11);
@@ -136,7 +143,6 @@ void hkDList_test() {
 
 void hkQueue_test() {
     printf("hkQueue_test:\n");
-    // haikal@hkQueue:i32:p
     hkQueue_i32 *q = hkQueue_i32_create();
     hkQueue_i32_print(q);
     hkQueue_i32_enqueue(q, 0);
@@ -179,7 +185,6 @@ void hkQueue_test() {
 
 void hkStack_test() {
     printf("hkStack_test:\n");
-    // haikal@hkStack:i32:p
     hkStack_i32 *stack = hkStack_i32_create();
     hkNode_i32 *node = NULL;
     hkStack_i32_push(stack, 32);
@@ -214,6 +219,8 @@ void hkStack_test() {
 
 void hkHashMap_test() {
     printf("hkHashMap_test:\n");
+    puts("");
+    printf("hkHashMap_i32:\n");
     hkHashMap_i32 *hashmap = hkHashMap_i32_create();
     printf("hashmap length = %llu\n", hkHashMap_i32_length(hashmap));
     if (!hashmap) {
@@ -231,6 +238,8 @@ void hkHashMap_test() {
     printf("hashmap length = %llu\n", hkHashMap_i32_length(hashmap));
     hkHashMap_i32_destroy(hashmap);
 
+    puts("");
+    printf("hkHashMap_vec:\n");
     hkHashMap_vec3 *hashmapvec = hkHashMap_vec3_create();
     printf("hashmapvec length = %llu\n", hkHashMap_vec3_length(hashmapvec));
     if (!hashmapvec) {
@@ -258,13 +267,35 @@ void hkHashMap_test() {
         printf("key = %s, val = {%f, %f, %f}\n", itvec.key, itvec.val.x, itvec.val.y, itvec.val.z);
     }
     hkHashMap_vec3_destroy(hashmapvec);
+
+    puts("");
+    printf("hkHashMap_hkArray_i32:\n");
+    hkHashMap_hkArray_i32 *hashmaparray = hkHashMap_hkArray_i32_create();
+    hkArray_i32 *resultarray = hkHashMap_hkArray_i32_get(hashmaparray, "dog");
+    if (!resultarray) {
+        hkHashMap_hkArray_i32_set(hashmaparray, "dog", (hkArray_i32) {0});
+        resultarray = hkHashMap_hkArray_i32_get(hashmaparray, "dog");
+    }
+    printf("key = %s, val = %p", "dog", resultarray);
+    *resultarray = hkArray_i32_create(12);
+    for (i32 i = 0; i < 12; i++) { resultarray->data[i] = i * i; }
+    for (i32 i = 0; i < 12; i++) { printf("hkArray.data[%d] = %d\n", i, resultarray->data[i]); }
+    printf("hashmapvec length = %llu\n", hkHashMap_hkArray_i32_length(hashmaparray));
+
+    printf("hash iterator...\n");
+    hkHashMapIterator_hkArray_i32 itarr = hkHashMapIterator_hkArray_i32_create(hashmaparray);
+    while (hkHashMapIterator_hkArray_i32_next(&itarr)) {
+        printf("key = %s, val = {%llu, %llu, %p}\n", itarr.key, itarr.val.length, itarr.val.border, itarr.val.data);
+        hkArray_i32_destroy(&itarr.val);
+    }
+    hkHashMap_hkArray_i32_destroy(hashmaparray);
     printf("\n");
 }
 
 structdef(Payload) {
     i32 id;
     i32 mx;
-    i8 *str;
+    char *str;
 };
 
 structdef(vec4i8) { i8 x; i8 y; i8 z; i8 w; };
@@ -289,9 +320,9 @@ void Arena_test() {
     }
     printf("\n");
 
-    i8 *str0 = strAlloc(&arena, "this is a te");
-    i8 *str1 = strAlloc(&arena, "st string to");
-    i8 *str2 = strAlloc(&arena, "alloc bytes.");
+    char *str0 = strAlloc(&arena, "this is a te");
+    char *str1 = strAlloc(&arena, "st string to");
+    char *str2 = strAlloc(&arena, "alloc bytes.");
     printf("%s\n", str0);
     printf("%s\n", str1);
     printf("%s\n", str2);
@@ -349,13 +380,13 @@ void StateMachine_test() {
 }
 
 int main(int argc, char *argv[]) {
-    // hkArray_test();
-    // hkHashMap_test();
+    hkArray_test();
+    hkHashMap_test();
     // hkList_test();
     // hkDList_test();
     // hkQueue_test();
     // hkStack_test();
-    Arena_test();
+    // Arena_test();
     // StateMachine_test();
 
     // i32 currentspeed = statemachineGet(motor1statemachine, motorGetSpeed);

@@ -58,9 +58,9 @@ void *arenaGetPos(Arena *arena) {
     return arena->cursor;
 }
 
-i8 *strAlloc(Arena *arena, i8 *input_str) {
+char *strAlloc(Arena *arena, char *input_str) {
     u64 input_str_len = strlen(input_str) + 1;
-    i8 *output_str = arenaPush(arena, sizeof(i8) * input_str_len);
+    char *output_str = arenaPush(arena, sizeof(i8) * input_str_len);
     memcpy(output_str, input_str, input_str_len);
     // output_str[0] = 'a';
     // for (i32 i = 0; i < input_str_len; ++i) {
@@ -69,7 +69,7 @@ i8 *strAlloc(Arena *arena, i8 *input_str) {
     return output_str;
 }
 
-void *strDealloc(Arena *arena, const i8 *input_str) {
+void *strDealloc(Arena *arena, const char *input_str) {
     u64 input_str_len = strlen(input_str) + 1;
     return arenaPop(arena, input_str_len);
 }
