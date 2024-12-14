@@ -96,6 +96,10 @@ void hkArray_test() {
     hkArray_i8_append(&arr, 23);
     hkArray_i8_append(&arr, 11);
     hkArray_i8_append(&arr, 8);
+    hkArray_i8_append(&arr, 127);
+    hkArray_i8_append(&arr, 23);
+    hkArray_i8_append(&arr, 11);
+    hkArray_i8_append(&arr, 8);
     for (int i = 0; i < arr.length; ++i) { 
         printf("arr[%d] = %d\n", i, arr.data[i]); 
     }
