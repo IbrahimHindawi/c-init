@@ -1,16 +1,4 @@
-#define CORE_IMPL
-#include <core.h>
-
-#include <Arena.h>
-#include "StateMachine/statemachine.h"
-#include "motor.h"
-
-
-// #include "hkArray_TypeX.h"
-// #include "TypeX.h"
-// #include "TypeX.c"
-// #include "hkArray_TypeX.c"
-
+//---------------------------------------------------------------------------------------------------
 // monomorphization codegen limitations:
 //---------------------------------------------------------------------------------------------------
 // for containers that have value types eg `T`,
@@ -46,6 +34,10 @@
 // haikal@hkHashMap:hkArray_i8:s
 // haikal@hkHashMap:hkArray_i32:s
 
+#define CORE_IMPL
+#include <core.h>
+
+#include "Arena.h"
 #include "vec3.h"
 
 #include <hkArray.h>
@@ -58,15 +50,6 @@
 
 #include "Rec.h"
 #include <hkHashMap.h>
-
-#include <hkArray.c>
-#include <hkBiNode.c>
-#include <hkDList.c>
-#include <hkHashMap.c>
-#include <hkList.c>
-#include <hkNode.c>
-#include <hkStack.c>
-#include <hkQueue.c>
 
 #include "Component.h"
 
@@ -100,9 +83,18 @@ void hkArray_test() {
     hkArray_i8_append(&arr, 23);
     hkArray_i8_append(&arr, 11);
     hkArray_i8_append(&arr, 8);
-    for (int i = 0; i < arr.length; ++i) { 
-        printf("arr[%d] = %d\n", i, arr.data[i]); 
-    }
+    for (int i = 0; i < arr.length; ++i) { printf("arr[%d] = %d\n", i, arr.data[i]); }
+    arr.length = 0;
+    for (int i = 0; i < arr.length; ++i) { printf("arr[%d] = %d\n", i, arr.data[i]); }
+    hkArray_i8_append(&arr, 0xBA);
+    hkArray_i8_append(&arr, 0xBA);
+    hkArray_i8_append(&arr, 0xBA);
+    hkArray_i8_append(&arr, 0xBA);
+    hkArray_i8_append(&arr, 0xBA);
+    hkArray_i8_append(&arr, 0xBA);
+    hkArray_i8_append(&arr, 0xBA);
+    hkArray_i8_append(&arr, 0xBA);
+    for (int i = 0; i < arr.length; ++i) { printf("arr[%d] = %d\n", i, arr.data[i]); }
     hkArray_i8_destroy(&arr);
     printf("\n");
 }
@@ -416,16 +408,6 @@ void Arena_test() {
     arenaClear(&arena);
 }
 
-void StateMachine_test() {
-    MotorData *data = {0};
-    data = malloc(sizeof(MotorData));
-    data->speed = 100;
-    statemachineEvent(motor0statemachine, motorSetSpeed, data);
-
-    data->speed = 200;
-    statemachineEvent(motor0statemachine, motorSetSpeed, data);
-}
-
 int main(int argc, char *argv[]) {
     hkArray_test();
     hkHashMap_test();
@@ -434,19 +416,6 @@ int main(int argc, char *argv[]) {
     // hkQueue_test();
     // hkStack_test();
     // Arena_test();
-    // StateMachine_test();
-
-    // i32 currentspeed = statemachineGet(motor1statemachine, motorGetSpeed);
-    // statemachineEvent(motor1statemachine, motorHalt, NULL);
-
-    // TypeX *tx = malloc(sizeof(TypeX));
-    // TypeXCreate(tx, 666, "Hades");
-    // printf("tx = { %d, %s }\n", tx->id, tx->name);
-    // TypeX *tx2 = TypeXCreate2(777, "Zeus");
-    // printf("tx2 = { %d, %s }\n", tx2->id, tx2->name);
-
-    // hkArray_TypeX arr = {0};
-    // hkArray_TypeX_reserve(&arr, 16);
 
     // TODO: fix code gen for external files
     // for this to work, we need to read all the included files
@@ -460,3 +429,12 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
+#include <hkArray.c>
+#include <hkBiNode.c>
+#include <hkDList.c>
+#include <hkHashMap.c>
+#include <hkList.c>
+#include <hkNode.c>
+#include <hkStack.c>
+#include <hkQueue.c>

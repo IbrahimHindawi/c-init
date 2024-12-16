@@ -6,22 +6,13 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED True)
 
+include_directories(extern/haikal/src/meta/gen)
 add_executable(${PROJECT_NAME}
     src/main.c
-    src/StateMachine/statemachine.c
-    src/StateMachine/fault.c
     src/fileops.c
     src/Component.c
 )
-add_subdirectory(extern)
-include_directories(src/)
-# <core.h>
-include_directories(extern/haikal/src)
-# final code gen output
-include_directories(extern/haikal/src/meta/gen)
-
-# find_package(cglm CONFIG REQUIRED)
-# target_link_libraries(${PROJECT_NAME} PRIVATE cglm::cglm)
+# add_subdirectory(extern) # in case of modules...
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 endif()
