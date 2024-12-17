@@ -45,10 +45,10 @@
 #include "vec3.h"
 
 #include <hkArray.h>
+#include <hkNode.h>
+#include <hkList.h>
 #include <hkBiNode.h>
 #include <hkDList.h>
-#include <hkList.h>
-#include <hkNode.h>
 #include <hkStack.h>
 #include <hkQueue.h>
 
@@ -60,7 +60,7 @@
 void hkArray_test() {
     printf("hkArray_test:\n");
     hkArray_i8 string = hkArray_i8_create(27);
-    for (int i = 0; i < string.length; ++i) {
+    for (i32 i = 0; i < string.length; ++i) {
         string.data[i] = 0b01100000 | i + 1;
     }
     string.data[string.length - 1] = '\0';
@@ -68,12 +68,12 @@ void hkArray_test() {
     hkArray_i8_destroy(&string);
 
     hkArray_vec3 vectors = hkArray_vec3_create(10);
-    for (int i = 0; i < vectors.length; ++i) {
+    for (i32 i = 0; i < vectors.length; ++i) {
         vectors.data[i].x = 1.0f;
         vectors.data[i].y = (f32)i;
         vectors.data[i].z = 3.141592f;
     }
-    for (int i = 0; i < vectors.length; ++i) { 
+    for (i32 i = 0; i < vectors.length; ++i) { 
         printf("vectors[%d] = {%f, %f, %f}\n", i, vectors.data[i].x, vectors.data[i].y, vectors.data[i].z); 
     }
     hkArray_vec3_destroy(&vectors);
@@ -87,9 +87,9 @@ void hkArray_test() {
     hkArray_i8_append(&arr, 23);
     hkArray_i8_append(&arr, 11);
     hkArray_i8_append(&arr, 8);
-    for (int i = 0; i < arr.length; ++i) { printf("arr[%d] = %d\n", i, arr.data[i]); }
+    for (i32 i = 0; i < arr.length; ++i) { printf("arr[%d] = %d\n", i, arr.data[i]); }
     arr.length = 0;
-    for (int i = 0; i < arr.length; ++i) { printf("arr[%d] = %d\n", i, arr.data[i]); }
+    for (i32 i = 0; i < arr.length; ++i) { printf("arr[%d] = %d\n", i, arr.data[i]); }
     hkArray_i8_append(&arr, 0xBA);
     hkArray_i8_append(&arr, 0xBA);
     hkArray_i8_append(&arr, 0xBA);
@@ -98,7 +98,7 @@ void hkArray_test() {
     hkArray_i8_append(&arr, 0xBA);
     hkArray_i8_append(&arr, 0xBA);
     hkArray_i8_append(&arr, 0xBA);
-    for (int i = 0; i < arr.length; ++i) { printf("arr[%d] = %d\n", i, arr.data[i]); }
+    for (i32 i = 0; i < arr.length; ++i) { printf("arr[%d] = %d\n", i, arr.data[i]); }
     hkArray_i8_destroy(&arr);
     printf("\n");
 }
@@ -191,31 +191,31 @@ void hkQueue_test() {
     hkQueue_i32_enqueue(q, 2);
     hkQueue_i32_print(q);
 
-    hkNode_i32 *node_i32 = NULL;
+    hkNode_i32 *node = NULL;
     i32 value = 0;
 
-    node_i32 = hkQueue_i32_dequeue(q);
-    value = hkNode_i32_value(node_i32);
+    node = hkQueue_i32_dequeue(q);
+    hkNode_i32_get(node, value);
     printf("node value: %d\n", value);
-    hkNode_i32_destroy(&node_i32);
+    hkNode_i32_destroy(&node);
     hkQueue_i32_print(q);
 
-    node_i32 = hkQueue_i32_dequeue(q);
-    value = hkNode_i32_value(node_i32);
+    node = hkQueue_i32_dequeue(q);
+    hkNode_i32_get(node, value);
     printf("node value: %d\n", value);
-    hkNode_i32_destroy(&node_i32);
+    hkNode_i32_destroy(&node);
     hkQueue_i32_print(q);
 
-    node_i32 = hkQueue_i32_dequeue(q);
-    value = hkNode_i32_value(node_i32);
+    node = hkQueue_i32_dequeue(q);
+    hkNode_i32_get(node, value);
     printf("node value: %d\n", value);
-    hkNode_i32_destroy(&node_i32);
+    hkNode_i32_destroy(&node);
     hkQueue_i32_print(q);
 
-    node_i32 = hkQueue_i32_dequeue(q);
-    value = hkNode_i32_value(node_i32);
+    node = hkQueue_i32_dequeue(q);
+    hkNode_i32_get(node, value);
     printf("node value: %d\n", value);
-    hkNode_i32_destroy(&node_i32);
+    hkNode_i32_destroy(&node);
     hkQueue_i32_print(q);
 
     hkQueue_i32_destroy(&q);
@@ -233,23 +233,23 @@ void hkStack_test() {
     hkStack_i32_print(stack);
 
     node = hkStack_i32_pop(stack);
-    printf("%d\n", hkNode_i32_value(node));
+    i32 value = 0;
     hkStack_i32_print(stack);
 
     node = hkStack_i32_pop(stack);
-    printf("%d\n", hkNode_i32_value(node));
+    hkNode_i32_get(node, value);
     hkStack_i32_print(stack);
 
     node = hkStack_i32_pop(stack);
-    printf("%d\n", hkNode_i32_value(node));
+    hkNode_i32_get(node, value);
     hkStack_i32_print(stack);
 
     node = hkStack_i32_pop(stack);
-    printf("%d\n", hkNode_i32_value(node));
+    hkNode_i32_get(node, value);
     hkStack_i32_print(stack);
 
     node = hkStack_i32_pop(stack);
-    printf("%d\n", hkNode_i32_value(node));
+    hkNode_i32_get(node, value);
     hkStack_i32_print(stack);
 
     hkStack_i32_destroy(&stack);
@@ -412,21 +412,23 @@ void Arena_test() {
     arenaClear(&arena);
 }
 
-int main(int argc, char *argv[]) {
+i32 main(i32 argc, char *argv[]) {
+    printf("haikal test begin.\n");
     hkArray_test();
     hkHashMap_test();
     hkList_test();
-    // hkDList_test();
-    // hkQueue_test();
-    // hkStack_test();
+    hkDList_test();
+    hkQueue_test();
+    hkStack_test();
     // Arena_test();
+    printf("haikal test end.\n");
 
     // TODO: fix code gen for external files
     // for this to work, we need to read all the included files
     // compile_commands.json should be enough...
     // or, use a unity build and just include everything in main.c 
     // but LSP will die in Component.h...
-    // ===========================================================
+    //---------------------------------------------------------------------------------------------------
     // Component comp = Component_create(10);
     // printf("comp.id = %d\n", comp.id);
     // Component_destroy(&comp);
