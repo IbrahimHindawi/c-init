@@ -16,15 +16,19 @@
 // this is because the type needs to know the container definition.
 // Warning: can be recursive type with `T *` but not `T`
 //---------------------------------------------------------------------------------------------------
-// haikal@hkHashMap:i32:p
+// primitives
+//---------------------------------------------------------------------------------------------------
 // haikal@hkArray:i8:p
 // haikal@hkArray:i32:p
+// haikal@hkHashMap:i32:p
 // haikal@hkNode:i32:p
 // haikal@hkList:i32:p
 // haikal@hkBiNode:i32:p
 // haikal@hkDList:i32:p
 // haikal@hkQueue:i32:p
 // haikal@hkStack:i32:p
+//---------------------------------------------------------------------------------------------------
+// structs
 //---------------------------------------------------------------------------------------------------
 // haikal@hkArray:hkList_i32:s
 // haikal@hkArray:vec3:s
