@@ -4,9 +4,7 @@
 #endif
 
 #include <core.h>
-#define N 1024
 #define maxallocsize 0x10000000000
-// u8 store[N];
 
 typedef struct Arena Arena;
 struct Arena {
@@ -54,11 +52,7 @@ void *arenaPush(Arena *arena, u64 allocsize) {
 }
 
 void *arenaPushZero(Arena *arena, u64 allocsize) {
-    if (arena->used + allocsize > N) {
-        printf("Memory allocation failure! Maximum memory reached!\n");
-        exit(-1);
-    }
-    arena->cursor += allocsize;
+    arenaPush(arena, allocsize);
     memcpy(arena->cursor, 0, allocsize);
     return arena->cursor;
 }
@@ -99,6 +93,19 @@ char *strAlloc(Arena *arena, char *input_str) {
 void *strDealloc(Arena *arena, const char *input_str) {
     u64 input_str_len = strlen(input_str) + 1;
     return arenaPop(arena, input_str_len);
+}
+
+void arenaPrint(Arena *arena) {
+    printf("Memory Dump: %llu bytes allocated.\n", arena->used);
+    printf("%p: ", arena->base);
+    for (i32 i = 0; i < arena->used; ++i) {
+        if(i % 8 == 0 && i != 0) {
+            printf("\n");
+            printf("%p: ", &arena->base[i]);
+        }
+        printf("%02x ", arena->base[i]);
+    }
+    printf("Memory Dump: End.\n");
 }
 
 #define arenaPushStruct(arena, type) arenaPush(arena, sizeof(type))

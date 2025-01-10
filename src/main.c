@@ -59,6 +59,7 @@
 
 void Array_test() {
     printf("Array_test:\n");
+    printf("----------------------------\n");
     Array_i8 string = Array_i8_create(27);
     for (i32 i = 0; i < string.length; ++i) {
         string.data[i] = 0b01100000 | i + 1;
@@ -105,6 +106,7 @@ void Array_test() {
 
 void List_test() {
     printf("List_test:\n");
+    printf("----------------------------\n");
     List_i32 loi = {0};
     Node_i32 *node = NULL;
     List_i32_append(&loi, 11);
@@ -163,6 +165,7 @@ void List_test() {
 
 void DList_test() {
     printf("DList_test:\n");
+    printf("----------------------------\n");
     DList_i32 *loi = DList_i32_create();
     BiNode_i32 *node = NULL;
     DList_i32_append(loi, 11);
@@ -182,6 +185,7 @@ void DList_test() {
 
 void Queue_test() {
     printf("Queue_test:\n");
+    printf("----------------------------\n");
     Queue_i32 *q = Queue_i32_create();
     Queue_i32_print(q);
     Queue_i32_enqueue(q, 0);
@@ -224,6 +228,7 @@ void Queue_test() {
 
 void Stack_test() {
     printf("Stack_test:\n");
+    printf("----------------------------\n");
     Stack_i32 *stack = Stack_i32_create();
     Node_i32 *node = NULL;
     Stack_i32_push(stack, 32);
@@ -258,7 +263,7 @@ void Stack_test() {
 
 void Map_test() {
     printf("Map_test:\n");
-    puts("");
+    printf("----------------------------\n");
     printf("Map_i32:\n");
     Map_i32 *hashmap = Map_i32_create();
     printf("hashmap length = %llu\n", Map_i32_length(hashmap));
@@ -346,6 +351,8 @@ typedef struct vec4i8 vec4i8;
 struct vec4i8 { i8 x; i8 y; i8 z; i8 w; };
 
 void Arena_test() {
+    printf("Arena_test:\n");
+    printf("----------------------------\n");
     Arena arena = {0};
     arenaInit(&arena);
 
@@ -410,16 +417,8 @@ void Arena_test() {
     }
     arenaPopArray(&arena, vec4i8, npts);
 
-    // printf("Memory Dump: %d bytes allocated.\n", N);
-    // printf("%p: ", store);
-    // for (i32 i = 0; i < N; ++i) {
-    //     if(i % 8 == 0 && i != 0) {
-    //         printf("\n");
-    //         printf("%p: ", &store[i]);
-    //     }
-    //     printf("%02x ", store[i]);
-    // }
-    // arenaClear(&arena);
+    arenaClear(&arena);
+    printf("\n");
 }
 
 void itos(int value, char* buffer) {
@@ -453,20 +452,21 @@ void itos(int value, char* buffer) {
 }
 
 i32 main(i32 argc, char *argv[]) {
-    printf("haikal test begin.\n");
-    // Array_test();
-    // Map_test();
-    // List_test();
-    // DList_test();
-    // Queue_test();
-    // Stack_test();
+    printf("haikal test begin...\n");
+    Array_test();
+    Map_test();
+    List_test();
+    DList_test();
+    Queue_test();
+    Stack_test();
     Arena_test();
+    printf("----------------------------\n");
     printf("haikal test end.\n");
 
-    char buffer[12];
-    int k = -120;
-    itos(k, buffer);
-    printf("itos = %s\n", buffer);
+    // char buffer[12];
+    // int k = -120;
+    // itos(k, buffer);
+    // printf("itos = %s\n", buffer);
 
     // TODO: fix code gen for external files
     // for this to work, we need to read all the included files
