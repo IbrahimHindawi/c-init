@@ -335,17 +335,19 @@ void Map_test() {
     printf("\n");
 }
 
-structdef(Payload) {
+typedef struct Payload Payload;
+struct Payload {
     i32 id;
     i32 mx;
     char *str;
 };
 
-structdef(vec4i8) { i8 x; i8 y; i8 z; i8 w; };
+typedef struct vec4i8 vec4i8;
+struct vec4i8 { i8 x; i8 y; i8 z; i8 w; };
 
 void Arena_test() {
     Arena arena = {0};
-    arenaInit(&arena, store);
+    arenaInit(&arena);
 
     const i32 len = 4;
     f32 *nums = arenaPushArray(&arena, i32, len);
@@ -362,6 +364,8 @@ void Arena_test() {
         printf("%02x ", ptr[i]);
     }
     printf("\n");
+
+    void *pos = arena.cursor;
 
     char *str0 = strAlloc(&arena, "this is a te");
     char *str1 = strAlloc(&arena, "st string to");
@@ -387,6 +391,12 @@ void Arena_test() {
     pld->str = "Name0";
     arenaPop(&arena, sizeof(Payload));
 
+    arenaSetPos(&arena, pos);
+    nums = arenaPushArray(&arena, i32, len);
+    for (i32 i = 0; i < len; ++i) {
+        nums[i] = (f32)(i + 1);
+    }
+
     arenaClear(&arena);
 
     // vec4i8 *vs = arenaPushArrayZero(&arena, vec4i8, 32);
@@ -400,28 +410,63 @@ void Arena_test() {
     }
     arenaPopArray(&arena, vec4i8, npts);
 
-    printf("Memory Dump: %d bytes allocated.\n", N);
-    printf("%p: ", store);
-    for (i32 i = 0; i < N; ++i) {
-        if(i % 8 == 0 && i != 0) {
-            printf("\n");
-            printf("%p: ", &store[i]);
-        }
-        printf("%02x ", store[i]);
+    // printf("Memory Dump: %d bytes allocated.\n", N);
+    // printf("%p: ", store);
+    // for (i32 i = 0; i < N; ++i) {
+    //     if(i % 8 == 0 && i != 0) {
+    //         printf("\n");
+    //         printf("%p: ", &store[i]);
+    //     }
+    //     printf("%02x ", store[i]);
+    // }
+    // arenaClear(&arena);
+}
+
+void itos(int value, char* buffer) {
+    char temp[12]; // Temporary buffer (enough for INT_MIN or INT_MAX with sign)
+    int i = 0;
+    bool is_negative = false;
+
+    // Handle negative numbers
+    if (value < 0) {
+        is_negative = true;
+        value = -value;
     }
-    arenaClear(&arena);
+
+    // Convert digits to characters in reverse order
+    do {
+        temp[i++] = (value % 10) + '0'; // Convert digit to character
+        value /= 10;
+    } while (value > 0);
+
+    // Add negative sign if necessary
+    if (is_negative) {
+        temp[i++] = '-';
+    }
+
+    // Reverse the string into the buffer
+    int j = 0;
+    while (i > 0) {
+        buffer[j++] = temp[--i];
+    }
+    buffer[j] = '\0'; // Null-terminate the string
 }
 
 i32 main(i32 argc, char *argv[]) {
     printf("haikal test begin.\n");
-    Array_test();
-    Map_test();
-    List_test();
-    DList_test();
-    Queue_test();
-    Stack_test();
-    // Arena_test();
+    // Array_test();
+    // Map_test();
+    // List_test();
+    // DList_test();
+    // Queue_test();
+    // Stack_test();
+    Arena_test();
     printf("haikal test end.\n");
+
+    char buffer[12];
+    int k = -120;
+    itos(k, buffer);
+    printf("itos = %s\n", buffer);
 
     // TODO: fix code gen for external files
     // for this to work, we need to read all the included files

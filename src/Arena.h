@@ -1,11 +1,20 @@
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
 #include <core.h>
 #define N 1024
-u8 store[N];
+#define maxallocsize 0x10000000000
+// u8 store[N];
 
-structdef(Arena) {
-    u8 *mem;
+typedef struct Arena Arena;
+struct Arena {
+    u8 *base;
     u8 *cursor;
-    usize used;
+    u64 used;
+    u64 pagesize;
+    u64 npages;
 };
 
 typedef struct hkArray_Node hkArray_Node;
@@ -15,19 +24,33 @@ structdef(Node) {
     hkArray_Node *nodes;
 };
 
-void arenaInit(Arena *arena, u8 *mem) {
-    arena->mem = mem;
-    arena->cursor = arena->mem;
-    arena->used = 0;
+void arenaInit(Arena *arena) {
+    SYSTEM_INFO systeminfo = {0};
+    GetSystemInfo(&systeminfo);
+    // printf("allocationgranularity = %lu\n", systeminfo.dwAllocationGranularity);
+    // printf("page size = %lu\n", systeminfo.dwPageSize);
+    arena->pagesize = systeminfo.dwPageSize; // 4096 or 0x1000
+    arena->base = VirtualAlloc(NULL, maxallocsize, MEM_RESERVE, PAGE_NOACCESS); // reserve 1,099,511,627,776 bytes
+    if (!arena->base) { exit(EXIT_FAILURE); }
+    arena->cursor = arena->base;
 }
 
 void *arenaPush(Arena *arena, u64 allocsize) {
-    if (arena->used + allocsize > N) {
-        printf("Memory allocation failure! Maximum memory reached!\n");
-        exit(-1);
+    if (arena->used + allocsize > arena->pagesize * arena->npages) {
+        // align
+        i32 npages = ceil((f32)(arena->used + allocsize) / arena->pagesize);
+        arena->npages = npages;
+        arena->base = VirtualAlloc(arena->base, arena->pagesize * arena->npages, MEM_COMMIT, PAGE_READWRITE);
+        if (!arena->base) { exit(EXIT_FAILURE); }
     }
+    if (arena->used > maxallocsize) {
+        printf("Memory allocation failure! Maximum memory reached!\n");
+        exit(EXIT_FAILURE);
+    }
+    arena->used += allocsize;
+    void *oldpos = arena->cursor;
     arena->cursor += allocsize;
-    return arena->cursor;
+    return oldpos;
 }
 
 void *arenaPushZero(Arena *arena, u64 allocsize) {
@@ -40,17 +63,21 @@ void *arenaPushZero(Arena *arena, u64 allocsize) {
     return arena->cursor;
 }
 
-// void *arenaRealloc(Arena *arena, u64 allocsize) {
-//     arena->tail = arena->cursor;
-//     return arenaPush(arena, allocsize);
-// }
+void *arenaSetPos(Arena *arena, void *pos) {
+    u64 diff = (u64)arena->cursor - (u64)pos;
+    arena->used -= diff;
+    arena->cursor = pos;
+    return arena->cursor;
+}
 
 void arenaClear(Arena *arena) {
-    arena->cursor = arena->mem;
+    arena->cursor = arena->base;
+    arena->used = 0;
 }
 
 void *arenaPop(Arena *arena, u64 allocsize) {
     arena->cursor -= allocsize;
+    arena->used -= allocsize;
     return arena->cursor;
 }
 
@@ -78,4 +105,3 @@ void *strDealloc(Arena *arena, const char *input_str) {
 #define arenaPushArray(arena, type, count) arenaPush(arena, sizeof(type) * count)
 #define arenaPopArray(arena, type, count) arenaPop(arena, sizeof(type) * count)
 #define arenaPushArrayZero(arena, type, count) arenaPushZero(arena, sizeof(type) * count)
-
