@@ -20,7 +20,9 @@
 //---------------------------------------------------------------------------------------------------
 // haikal@Array:i8:p
 // haikal@Array:i32:p
+// haikal@Array:voidptr:p
 // haikal@Map:i32:p
+// haikal@Map:u64:p
 // haikal@Node:i32:p
 // haikal@List:i32:p
 // haikal@BiNode:i32:p
@@ -37,7 +39,12 @@
 // haikal@Map:Rec:s
 // haikal@Map:Array_i8:s
 // haikal@Map:Array_i32:s
+//---------------------------------------------------------------------------------------------------
+// unions
+//---------------------------------------------------------------------------------------------------
 
+#include <stdio.h>
+#include <string.h>
 #define CORE_IMPL
 #include <core.h>
 
@@ -56,10 +63,10 @@
 #include <Map.h>
 
 #include "Component.h"
+#include "archetype.h"
 
 void Array_test() {
     printf("Array_test:\n");
-    printf("----------------------------\n");
     Array_i8 string = Array_i8_create(27);
     for (i32 i = 0; i < string.length; ++i) {
         string.data[i] = 0b01100000 | i + 1;
@@ -106,7 +113,6 @@ void Array_test() {
 
 void List_test() {
     printf("List_test:\n");
-    printf("----------------------------\n");
     List_i32 loi = {0};
     Node_i32 *node = NULL;
     List_i32_append(&loi, 11);
@@ -165,7 +171,6 @@ void List_test() {
 
 void DList_test() {
     printf("DList_test:\n");
-    printf("----------------------------\n");
     DList_i32 *loi = DList_i32_create();
     BiNode_i32 *node = NULL;
     DList_i32_append(loi, 11);
@@ -185,7 +190,6 @@ void DList_test() {
 
 void Queue_test() {
     printf("Queue_test:\n");
-    printf("----------------------------\n");
     Queue_i32 *q = Queue_i32_create();
     Queue_i32_print(q);
     Queue_i32_enqueue(q, 0);
@@ -228,7 +232,6 @@ void Queue_test() {
 
 void Stack_test() {
     printf("Stack_test:\n");
-    printf("----------------------------\n");
     Stack_i32 *stack = Stack_i32_create();
     Node_i32 *node = NULL;
     Stack_i32_push(stack, 32);
@@ -263,7 +266,7 @@ void Stack_test() {
 
 void Map_test() {
     printf("Map_test:\n");
-    printf("----------------------------\n");
+    puts("");
     printf("Map_i32:\n");
     Map_i32 *hashmap = Map_i32_create();
     printf("hashmap length = %llu\n", Map_i32_length(hashmap));
@@ -340,21 +343,17 @@ void Map_test() {
     printf("\n");
 }
 
-typedef struct Payload Payload;
-struct Payload {
+structdef(Payload) {
     i32 id;
     i32 mx;
     char *str;
 };
 
-typedef struct vec4i8 vec4i8;
-struct vec4i8 { i8 x; i8 y; i8 z; i8 w; };
+structdef(vec4i8) { i8 x; i8 y; i8 z; i8 w; };
 
 void Arena_test() {
-    printf("Arena_test:\n");
-    printf("----------------------------\n");
     Arena arena = {0};
-    arenaInit(&arena);
+    // arenaInit(&arena, store);
 
     const i32 len = 4;
     f32 *nums = arenaPushArray(&arena, i32, len);
@@ -371,8 +370,6 @@ void Arena_test() {
         printf("%02x ", ptr[i]);
     }
     printf("\n");
-
-    void *pos = arena.cursor;
 
     char *str0 = strAlloc(&arena, "this is a te");
     char *str1 = strAlloc(&arena, "st string to");
@@ -398,12 +395,6 @@ void Arena_test() {
     pld->str = "Name0";
     arenaPop(&arena, sizeof(Payload));
 
-    arenaSetPos(&arena, pos);
-    nums = arenaPushArray(&arena, i32, len);
-    for (i32 i = 0; i < len; ++i) {
-        nums[i] = (f32)(i + 1);
-    }
-
     arenaClear(&arena);
 
     // vec4i8 *vs = arenaPushArrayZero(&arena, vec4i8, 32);
@@ -417,56 +408,29 @@ void Arena_test() {
     }
     arenaPopArray(&arena, vec4i8, npts);
 
-    arenaClear(&arena);
-    printf("\n");
-}
-
-void itos(int value, char* buffer) {
-    char temp[12]; // Temporary buffer (enough for INT_MIN or INT_MAX with sign)
-    int i = 0;
-    bool is_negative = false;
-
-    // Handle negative numbers
-    if (value < 0) {
-        is_negative = true;
-        value = -value;
-    }
-
-    // Convert digits to characters in reverse order
-    do {
-        temp[i++] = (value % 10) + '0'; // Convert digit to character
-        value /= 10;
-    } while (value > 0);
-
-    // Add negative sign if necessary
-    if (is_negative) {
-        temp[i++] = '-';
-    }
-
-    // Reverse the string into the buffer
-    int j = 0;
-    while (i > 0) {
-        buffer[j++] = temp[--i];
-    }
-    buffer[j] = '\0'; // Null-terminate the string
+    // printf("Memory Dump: %d bytes allocated.\n", N);
+    // printf("%p: ", store);
+    // for (i32 i = 0; i < N; ++i) {
+    //     if(i % 8 == 0 && i != 0) {
+    //         printf("\n");
+    //         printf("%p: ", &store[i]);
+    //     }
+    //     printf("%02x ", store[i]);
+    // }
+    // arenaClear(&arena);
 }
 
 i32 main(i32 argc, char *argv[]) {
-    printf("haikal test begin...\n");
-    Array_test();
-    Map_test();
-    List_test();
-    DList_test();
-    Queue_test();
-    Stack_test();
-    Arena_test();
-    printf("----------------------------\n");
+    printf("haikal test begin.\n");
+    // Array_test();
+    // Map_test();
+    // List_test();
+    // DList_test();
+    // Queue_test();
+    // Stack_test();
+    // Arena_test();
+    Archetype_test();
     printf("haikal test end.\n");
-
-    // char buffer[12];
-    // int k = -120;
-    // itos(k, buffer);
-    // printf("itos = %s\n", buffer);
 
     // TODO: fix code gen for external files
     // for this to work, we need to read all the included files
