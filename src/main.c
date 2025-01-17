@@ -20,6 +20,7 @@
 //---------------------------------------------------------------------------------------------------
 // haikal@Array:i8:p
 // haikal@Array:i32:p
+// haikal@Array:f32:p
 // haikal@Array:voidptr:p
 // haikal@Map:i32:p
 // haikal@Map:u64:p
@@ -34,6 +35,7 @@
 //---------------------------------------------------------------------------------------------------
 // haikal@Array:List_i32:s
 // haikal@Array:vec3:s
+// haikal@Array:vec4:s
 // haikal@Array:Rec:s
 // haikal@Map:vec3:s
 // haikal@Map:Rec:s
