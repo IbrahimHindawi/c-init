@@ -65,7 +65,6 @@
 #include <Map.h>
 
 #include "Component.h"
-#include "archetype.h"
 
 void Array_test() {
     printf("Array_test:\n");
@@ -424,14 +423,13 @@ void Arena_test() {
 
 i32 main(i32 argc, char *argv[]) {
     printf("haikal test begin.\n");
-    // Array_test();
-    // Map_test();
-    // List_test();
-    // DList_test();
-    // Queue_test();
-    // Stack_test();
-    // Arena_test();
-    Archetype_test();
+    Array_test();
+    Map_test();
+    List_test();
+    DList_test();
+    Queue_test();
+    Stack_test();
+    Arena_test();
     printf("haikal test end.\n");
 
     // TODO: fix code gen for external files
