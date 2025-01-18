@@ -4,12 +4,14 @@
 #endif
 
 #include <core.h>
+#include <stdalign.h>
 #define maxallocsize 0x10000000000
 
 typedef struct Arena Arena;
 struct Arena {
     u8 *base;
     u8 *cursor;
+    u8 *previous;
     u64 used;
     u64 pagesize;
     u64 npages;
@@ -31,12 +33,43 @@ void arenaInit(Arena *arena) {
     arena->base = VirtualAlloc(NULL, maxallocsize, MEM_RESERVE, PAGE_NOACCESS); // reserve 1,099,511,627,776 bytes
     if (!arena->base) { exit(EXIT_FAILURE); }
     arena->cursor = arena->base;
+    arena->previous = arena->base;
 }
 
-void *arenaPush(Arena *arena, u64 allocsize) {
-    if (arena->used + allocsize > arena->pagesize * arena->npages) {
-        // align
-        i32 npages = ceil((f32)(arena->used + allocsize) / arena->pagesize);
+bool memoryIsPowerOfTwo(uintptr_t x) {
+	return (x & (x-1)) == 0;
+}
+
+uintptr_t memoryAlignForward(uintptr_t ptr, size_t align) {
+	uintptr_t p;
+    uintptr_t a;
+    uintptr_t modulo;
+
+	assert(memoryIsPowerOfTwo(align));
+
+	p = ptr;
+	a = (uintptr_t)align;
+	// Same as (p % a) but faster as 'a' is a power of two
+	modulo = p & (a-1);
+
+	if (modulo != 0) {
+		// If 'p' address is not aligned, push the address to the
+		// next value which is aligned
+		p += a - modulo;
+	}
+	return p;
+}
+
+void *arenaPush(Arena *arena, u64 allocsize, u64 align) {
+	// Align 'curr_offset' forward to the specified alignment
+	uintptr_t curr_ptr = (uintptr_t)arena->base + (uintptr_t)arena->used;
+	uintptr_t offset = memoryAlignForward(curr_ptr, align);
+    // Change to relative offset
+	offset -= (uintptr_t)arena->base;
+    // printf("align = %llu\n", align);
+    // printf("offset = %llu\n", offset);
+    if (arena->used + allocsize + offset > arena->pagesize * arena->npages) {
+        i32 npages = ceil((f32)(arena->used + allocsize + offset) / arena->pagesize);
         arena->npages = npages;
         arena->base = VirtualAlloc(arena->base, arena->pagesize * arena->npages, MEM_COMMIT, PAGE_READWRITE);
         if (!arena->base) { exit(EXIT_FAILURE); }
@@ -45,14 +78,15 @@ void *arenaPush(Arena *arena, u64 allocsize) {
         printf("Memory allocation failure! Maximum memory reached!\n");
         exit(EXIT_FAILURE);
     }
-    arena->used += allocsize;
+    arena->used += allocsize + offset;
     void *oldpos = arena->cursor;
-    arena->cursor += allocsize;
+    arena->previous = oldpos;
+    arena->cursor += allocsize + offset;
     return oldpos;
 }
 
-void *arenaPushZero(Arena *arena, u64 allocsize) {
-    arenaPush(arena, allocsize);
+void *arenaPushZero(Arena *arena, u64 allocsize, u64 align) {
+    arenaPush(arena, allocsize, align);
     memcpy(arena->cursor, 0, allocsize);
     return arena->cursor;
 }
@@ -70,6 +104,12 @@ void arenaClear(Arena *arena) {
 }
 
 void *arenaPop(Arena *arena, u64 allocsize) {
+    // leads to fragmentation, needs solution
+    // uintptr_t diff = arena->cursor - arena->previous;
+    // uintptr_t offset = diff - allocsize;
+    // uintptr_t oldprevious = arena->previous;
+    // arena->cursor = arena->previous;
+    // arena->cursor -= allocsize + offset;
     arena->cursor -= allocsize;
     arena->used -= allocsize;
     return arena->cursor;
@@ -81,7 +121,7 @@ void *arenaGetPos(Arena *arena) {
 
 char *strAlloc(Arena *arena, char *input_str) {
     u64 input_str_len = strlen(input_str) + 1;
-    char *output_str = arenaPush(arena, sizeof(i8) * input_str_len);
+    char *output_str = arenaPush(arena, sizeof(char) * input_str_len, _Alignof(char));
     memcpy(output_str, input_str, input_str_len);
     // output_str[0] = 'a';
     // for (i32 i = 0; i < input_str_len; ++i) {
@@ -108,7 +148,7 @@ void arenaPrint(Arena *arena) {
     printf("Memory Dump: End.\n");
 }
 
-#define arenaPushStruct(arena, type) arenaPush(arena, sizeof(type))
-#define arenaPushArray(arena, type, count) arenaPush(arena, sizeof(type) * count)
+#define arenaPushStruct(arena, type) arenaPush(arena, sizeof(type), _Alignof(type))
+#define arenaPushArray(arena, type, count) arenaPush(arena, sizeof(type) * count, _Alignof(type))
 #define arenaPopArray(arena, type, count) arenaPop(arena, sizeof(type) * count)
-#define arenaPushArrayZero(arena, type, count) arenaPushZero(arena, sizeof(type) * count)
+#define arenaPushArrayZero(arena, type, count) arenaPushZero(arena, sizeof(type) * count, _Alignof(type))

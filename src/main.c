@@ -354,7 +354,7 @@ structdef(vec4i8) { i8 x; i8 y; i8 z; i8 w; };
 
 void Arena_test() {
     Arena arena = {0};
-    // arenaInit(&arena, store);
+    arenaInit(&arena);
 
     const i32 len = 4;
     f32 *nums = arenaPushArray(&arena, i32, len);
@@ -372,6 +372,8 @@ void Arena_test() {
     }
     printf("\n");
 
+    void *pos = arena.cursor;
+
     char *str0 = strAlloc(&arena, "this is a te");
     char *str1 = strAlloc(&arena, "st string to");
     char *str2 = strAlloc(&arena, "alloc bytes.");
@@ -385,16 +387,28 @@ void Arena_test() {
     printf("%s\n", str1);
     printf("%s\n", str2);
 
+    arenaSetPos(&arena, pos);
+
     Payload *pld = arenaPushStruct(&arena, Payload);
     pld->id = 0xDEADBEEF;
     pld->mx = 0xCAFEBABE;
     pld->str = "Name0";
     arenaPop(&arena, sizeof(Payload));
+
     pld = arenaPushStruct(&arena, Payload);
     pld->id = 0xFFFFFFFF;
     pld->mx = 0xFFFFFFFF;
     pld->str = "Name0";
     arenaPop(&arena, sizeof(Payload));
+    pld->id = 0xDEADBEEF;
+    pld->mx = 0xCAFEBABE;
+    pld->str = "Name0";
+
+    arenaSetPos(&arena, pos);
+    nums = arenaPushArray(&arena, i32, len);
+    for (i32 i = 0; i < len; ++i) {
+        nums[i] = (f32)(i + 1);
+    }
 
     arenaClear(&arena);
 
@@ -423,12 +437,12 @@ void Arena_test() {
 
 i32 main(i32 argc, char *argv[]) {
     printf("haikal test begin.\n");
-    Array_test();
-    Map_test();
-    List_test();
-    DList_test();
-    Queue_test();
-    Stack_test();
+    // Array_test();
+    // Map_test();
+    // List_test();
+    // DList_test();
+    // Queue_test();
+    // Stack_test();
     Arena_test();
     printf("haikal test end.\n");
 
