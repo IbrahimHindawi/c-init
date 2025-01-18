@@ -439,12 +439,12 @@ void Arena_test() {
 
 i32 main(i32 argc, char *argv[]) {
     printf("haikal test begin.\n");
-    // Array_test();
-    // Map_test();
-    // List_test();
-    // DList_test();
-    // Queue_test();
-    // Stack_test();
+    Array_test();
+    Map_test();
+    List_test();
+    DList_test();
+    Queue_test();
+    Stack_test();
     Arena_test();
     printf("haikal test end.\n");
 
