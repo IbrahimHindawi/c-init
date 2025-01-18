@@ -36,7 +36,7 @@ void arenaInit(Arena *arena) {
     arena->previous = arena->base;
 }
 
-bool memoryIsPowerOfTwo(uintptr_t x) {
+bool isPowerOfTwo(uintptr_t x) {
 	return (x & (x-1)) == 0;
 }
 
@@ -45,7 +45,7 @@ uintptr_t memoryAlignForward(uintptr_t ptr, size_t align) {
     uintptr_t a;
     uintptr_t modulo;
 
-	assert(memoryIsPowerOfTwo(align));
+	assert(isPowerOfTwo(align));
 
 	p = ptr;
 	a = (uintptr_t)align;
@@ -65,11 +65,13 @@ void *arenaPush(Arena *arena, u64 allocsize, u64 align) {
 	uintptr_t curr_ptr = (uintptr_t)arena->base + (uintptr_t)arena->used;
 	uintptr_t offset = memoryAlignForward(curr_ptr, align);
     // Change to relative offset
-	offset -= (uintptr_t)arena->base;
+	// offset -= (uintptr_t)arena->base;
+    // uintptr_t diff = curr_ptr - offset;
+    uintptr_t diff = offset - curr_ptr;
     // printf("align = %llu\n", align);
     // printf("offset = %llu\n", offset);
-    if (arena->used + allocsize + offset > arena->pagesize * arena->npages) {
-        i32 npages = ceil((f32)(arena->used + allocsize + offset) / arena->pagesize);
+    if (arena->used + allocsize + diff > arena->pagesize * arena->npages) {
+        i32 npages = ceil((f32)(arena->used + allocsize + diff) / arena->pagesize);
         arena->npages = npages;
         arena->base = VirtualAlloc(arena->base, arena->pagesize * arena->npages, MEM_COMMIT, PAGE_READWRITE);
         if (!arena->base) { exit(EXIT_FAILURE); }
@@ -78,10 +80,16 @@ void *arenaPush(Arena *arena, u64 allocsize, u64 align) {
         printf("Memory allocation failure! Maximum memory reached!\n");
         exit(EXIT_FAILURE);
     }
-    arena->used += allocsize + offset;
+    arena->used += allocsize + diff;
+    // save cursor before push
+    arena->previous = arena->cursor;
+    // align cursor
+    arena->cursor += diff;
+    // save aligned cursor
     void *oldpos = arena->cursor;
-    arena->previous = oldpos;
-    arena->cursor += allocsize + offset;
+    // allocate
+    arena->cursor += allocsize;
+    // return aligned cursor
     return oldpos;
 }
 

@@ -388,6 +388,8 @@ void Arena_test() {
     printf("%s\n", str2);
 
     arenaSetPos(&arena, pos);
+    i8 *x = arenaPush(&arena, sizeof(i8), _Alignof(i8));
+    *x = 0xDD;
 
     Payload *pld = arenaPushStruct(&arena, Payload);
     pld->id = 0xDEADBEEF;
