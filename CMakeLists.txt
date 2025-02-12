@@ -6,7 +6,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED True)
 
-include_directories(extern/haikal/src/meta/gen)
+include_directories(extern/haikal/src/meta_arena/gen)
+include_directories(extern/saha/src)
 add_executable(${PROJECT_NAME}
     src/main.c
     src/fileops.c
