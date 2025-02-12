@@ -21,7 +21,9 @@
 // haikal@Array:voidptr:p
 // haikal@Array:i8:p
 // haikal@Array:i32:p
+// haikal@Array:f32:p
 // haikal@Map:i32:p
+// haikal@Map:u64:p
 // haikal@Node:i32:p
 // haikal@List:i32:p
 // haikal@BiNode:i32:p
@@ -33,13 +35,18 @@
 //---------------------------------------------------------------------------------------------------
 // haikal@Array:List_i32:s
 // haikal@Array:vec3:s
+// haikal@Array:vec4:s
 // haikal@Array:Rec:s
 // haikal@Map:vec3:s
 // haikal@Map:Rec:s
 // haikal@Map:Array_i8:s
 // haikal@Map:Array_i32:s
-// @Array:TaggedArchetype:s
+//---------------------------------------------------------------------------------------------------
+// unions
+//---------------------------------------------------------------------------------------------------
 
+#include <stdio.h>
+#include <string.h>
 #define CORE_IMPL
 #include <core.h>
 
@@ -111,7 +118,6 @@ void Array_test(Arena *arena) {
 
 void List_test(Arena *arena) {
     printf("List_test:\n");
-    printf("----------------------------\n");
     List_i32 loi = {0};
     Node_i32 *node = NULL;
     List_i32_append(arena, &loi, 11);
@@ -191,6 +197,7 @@ void DList_test(Arena *arena) {
 void Queue_test(Arena *arena) {
     printf("Queue_test:\n");
     printf("----------------------------\n");
+
     Queue_i32 *q = Queue_i32_create(arena);
     Queue_i32_print(arena, q);
     Queue_i32_enqueue(arena, q, 0);
@@ -268,7 +275,7 @@ void Stack_test(Arena *arena) {
 
 void Map_test(Arena *arena) {
     printf("Map_test:\n");
-    printf("----------------------------\n");
+    puts("");
     printf("Map_i32:\n");
     Map_i32 *hashmap = Map_i32_create(arena);
     printf("hashmap length = %llu\n", Map_i32_length(arena, hashmap));
@@ -345,15 +352,13 @@ void Map_test(Arena *arena) {
     printf("\n");
 }
 
-typedef struct Payload Payload;
-struct Payload {
+structdef(Payload) {
     i32 id;
     i32 mx;
     char *str;
 };
 
-typedef struct vec4i8 vec4i8;
-struct vec4i8 { i8 x; i8 y; i8 z; i8 w; };
+structdef(vec4i8) { i8 x; i8 y; i8 z; i8 w; };
 
 void Arena_test(Arena *arena) {
     printf("Arena_test:\n");
@@ -402,6 +407,13 @@ void Arena_test(Arena *arena) {
     pld->mx = 0xFFFFFFFF;
     pld->str = "Name0";
     arenaPop(arena, sizeof(Payload));
+
+    arenaSetPos(arena, pos);
+    i8 *x = arenaPush(arena, sizeof(i8), _Alignof(i8));
+    *x = 0xDD;
+
+    arenaPop(arena, sizeof(Payload));
+
 
     arenaSetPos(arena, pos);
     nums = arenaPushArray(arena, i32, len);
@@ -469,14 +481,8 @@ i32 main(i32 argc, char *argv[]) {
     Stack_test(&arena);
     Arena_test(&arena);
     // Archetype_test();
+    printf("haikal test end...\n");
     printf("----------------------------\n");
-    printf("haikal test end.\n");
-
-    // char buffer[12];
-    // int k = -120;
-    // itos(k, buffer);
-    // printf("itos = %s\n", buffer);
-
     // TODO: fix code gen for external files
     // for this to work, we need to read all the included files
     // compile_commands.json should be enough...
