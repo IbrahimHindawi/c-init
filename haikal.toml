@@ -1,5 +1,5 @@
 [core]
-mainpath = "src/main.c"
+mainpath = "src/main.cpp"
 
 # use this path for malloc implementation
 # metapath = "extern/haikal/src/meta/"

@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(c-init VERSION 1.0 LANGUAGES C)
+project(c-init VERSION 1.0 LANGUAGES CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_C_STANDARD 99)
-set(CMAKE_C_STANDARD_REQUIRED True)
+# set(CMAKE_C_STANDARD 99)
+# set(CMAKE_C_STANDARD_REQUIRED True)
 
 include_directories(extern/haikal/src/meta_arena/gen)
 include_directories(extern/saha/src)
 add_executable(${PROJECT_NAME}
-    src/main.c
+    src/main.cpp
     src/fileops.c
     src/Component.c
 )
