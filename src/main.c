@@ -44,11 +44,15 @@
 //---------------------------------------------------------------------------------------------------
 // unions
 //---------------------------------------------------------------------------------------------------
+#define SAHA_IMPLEMENTATION
+#include <saha.h>
+
+#define CORE_IMPL
+#include <core.h>
+bool i32_eq(i32 a, i32 b) { return a == b; }
 
 #include <stdio.h>
 #include <string.h>
-#define CORE_IMPL
-#include <core.h>
 
 // #include "Arena.h"
 #include "vec3.h"
@@ -64,31 +68,34 @@
 #include "Rec.h"
 #include <Map.h>
 
-// #include "archetype.h"
-
 #include "Component.h"
 
 void Array_test(Arena *arena) {
     printf("Array_test:\n");
     printf("----------------------------\n");
-    Array_i8 string = Array_i8_reserve(arena, 27);
-    for (i32 i = 0; i < string.length; ++i) {
-        string.data[i] = 0b01100000 | i + 1;
+    void* pos = NULL;
+    pos = arenaGetPos(arena);
+    i32 const string_alloc_capacity = 27;
+    Array_i8 string = Array_i8_reserve(arena, string_alloc_capacity);
+    for (i32 i = 0; i < string_alloc_capacity; ++i) {
+        Array_i8_append(arena, &string, 0b01100000 | i + 1);
     }
-    string.data[string.length - 1] = '\0';
+    Array_i8_append(arena, &string, '\0');
     printf("string: %s\n", string.data);
     Array_i8_destroy(arena, &string);
+    arenaSetPos(arena, pos);
 
-    Array_vec3 vectors = Array_vec3_reserve(arena, 10);
-    for (i32 i = 0; i < vectors.length; ++i) {
-        vectors.data[i].x = 1.0f;
-        vectors.data[i].y = (f32)i;
-        vectors.data[i].z = 3.141592f;
+    pos = arenaGetPos(arena);
+    i32 const vectors_alloc_capacity = 10;
+    Array_vec3 vectors = Array_vec3_reserve(arena, vectors_alloc_capacity);
+    for (i32 i = 0; i < vectors_alloc_capacity; ++i) {
+        Array_vec3_append(arena, &vectors, (vec3){1.f, (f32)i, 3.141592});
     }
     for (i32 i = 0; i < vectors.length; ++i) { 
         printf("vectors[%d] = {%f, %f, %f}\n", i, vectors.data[i].x, vectors.data[i].y, vectors.data[i].z); 
     }
     Array_vec3_destroy(arena, &vectors);
+    arenaSetPos(arena, pos);
 
     Array_i8 arr = {0};
     Array_i8_reserve(arena, 32);
@@ -367,7 +374,7 @@ void Arena_test(Arena *arena) {
     // arenaInit(arena);
 
     const i32 len = 4;
-    f32 *nums = arenaPushArray(arena, i32, len);
+    f32 *nums = arenaPushArray(arena, f32, len);
     for (i32 i = 0; i < len; ++i) {
         nums[i] = (f32)(i + 1);
     }
@@ -416,7 +423,7 @@ void Arena_test(Arena *arena) {
 
 
     arenaSetPos(arena, pos);
-    nums = arenaPushArray(arena, i32, len);
+    nums = arenaPushArray(arena, f32, len);
     for (i32 i = 0; i < len; ++i) {
         nums[i] = (f32)(i + 1);
     }
