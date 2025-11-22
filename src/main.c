@@ -22,6 +22,7 @@
 // haikal@Array:i8:p
 // haikal@Array:i32:p
 // haikal@Array:f32:p
+// haikal@Array:char:p
 // haikal@Map:i32:p
 // haikal@Map:u64:p
 // haikal@Node:i32:p
@@ -69,6 +70,20 @@ bool i32_eq(i32 a, i32 b) { return a == b; }
 #include <Map.h>
 
 #include "Component.h"
+
+typedef Array_char string;
+
+static inline string string_reserve(Arena *arena, u64 length) {
+    return Array_char_reserve(arena, length);
+}
+
+static inline string string_from_lit(Arena *arena, char const *string_lit) {
+    u64 length = strlen(string_lit);
+    string result = string_reserve(arena, length);
+    memcpy(result.data, string_lit, length);
+    return result;
+}
+
 
 void Array_test(Arena *arena) {
     printf("Array_test:\n");
@@ -487,7 +502,9 @@ i32 main(i32 argc, char *argv[]) {
     Queue_test(&arena);
     Stack_test(&arena);
     Arena_test(&arena);
-    // Archetype_test();
+    Archetype_test();
+    string s = string_from_lit(&arena, "Hell, World!");
+    printf("string = %s\n", s.data);
     printf("haikal test end...\n");
     printf("----------------------------\n");
     // TODO: fix code gen for external files
