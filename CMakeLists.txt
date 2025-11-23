@@ -12,6 +12,10 @@ add_executable(${PROJECT_NAME}
     src/fileops.c
     src/Component.c
     src/main.c
+    src/string8.c
+    src/string8_containers.c
+    src/string8slice.c
+    src/string8slice_containers.c
 )
 # add_subdirectory(extern) # in case of modules...
 

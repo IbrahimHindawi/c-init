@@ -1,1 +1,4 @@
-Programming is fun!
+Programming is fun.
+C & Assembly.
+Game Engine Programming.
+Test. Test. Test.

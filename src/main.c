@@ -23,6 +23,7 @@
 // haikal@Array:i32:p
 // haikal@Array:f32:p
 // haikal@Array:char:p
+// haikal@Array:u8:p
 // haikal@Map:i32:p
 // haikal@Map:u64:p
 // haikal@Node:i32:p
@@ -34,17 +35,18 @@
 //---------------------------------------------------------------------------------------------------
 // structs
 //---------------------------------------------------------------------------------------------------
-// haikal@Array:List_i32:s
 // haikal@Array:vec3:s
 // haikal@Array:vec4:s
 // haikal@Array:Rec:s
 // haikal@Map:vec3:s
 // haikal@Map:Rec:s
+// haikal@Array:List_i32:s
 // haikal@Map:Array_i8:s
 // haikal@Map:Array_i32:s
 //---------------------------------------------------------------------------------------------------
 // unions
 //---------------------------------------------------------------------------------------------------
+#include <stdlib.h>
 #define SAHA_IMPLEMENTATION
 #include <saha.h>
 
@@ -55,9 +57,17 @@ bool i32_eq(i32 a, i32 b) { return a == b; }
 #include <stdio.h>
 #include <string.h>
 
-// #include "Arena.h"
-#include "vec3.h"
+// add types
+// haikal@Array:string8:s
+#include "string8.h"
+// haikal@Array:string8slice:s
+#include "string8slice.h"
 
+#include "vec3.h"
+#include "Rec.h"
+#include "Component.h"
+
+// add codegen
 #include <Array.h>
 #include <Node.h>
 #include <List.h>
@@ -65,40 +75,103 @@ bool i32_eq(i32 a, i32 b) { return a == b; }
 #include <DList.h>
 #include <Stack.h>
 #include <Queue.h>
-
-#include "Rec.h"
 #include <Map.h>
 
-#include "Component.h"
+// add containers
+#include "string8_containers.h"
+#include "string8slice_containers.h"
 
-typedef Array_char string;
+structdef(Payload) {
+    i32 id;
+    i32 mx;
+    char *str;
+};
 
-static inline string string_reserve(Arena *arena, u64 length) {
-    return Array_char_reserve(arena, length);
+structdef(vec4i8) { i8 x; i8 y; i8 z; i8 w; };
+
+void Arena_test(Arena *arena) {
+    printf("Arena_test:\n");
+    printf("----------------------------\n");
+    // Arena arena = {0};
+    // arenaInit(arena);
+
+    const i32 len = 4;
+    f32 *nums = arenaPushArray(arena, f32, len);
+    for (i32 i = 0; i < len; ++i) {
+        nums[i] = (f32)(i + 1);
+    }
+    for (i32 i = 0; i < len; ++i) {
+        printf("%f ", nums[i]);
+    }
+    printf("\n");
+
+    u8 *ptr = (u8 *)nums;
+    for (i32 i = 0; i < sizeof(f32) * len; ++i) {
+        printf("%02x ", ptr[i]);
+    }
+    printf("\n");
+
+    void *pos = arena->cursor;
+
+    char *str0 = strAlloc(arena, "this is a te");
+    char *str1 = strAlloc(arena, "st string to");
+    char *str2 = strAlloc(arena, "alloc bytes.");
+    printf("%s\n", str0);
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+
+    strDealloc(arena, str2);
+    str2 = strAlloc(arena, "fortitude");
+    printf("%s\n", str0);
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+
+    Payload *pld = arenaPushStruct(arena, Payload);
+    pld->id = 0xDEADBEEF;
+    pld->mx = 0xCAFEBABE;
+    pld->str = "Name0";
+    arenaPop(arena, sizeof(Payload));
+    pld = arenaPushStruct(arena, Payload);
+    pld->id = 0xFFFFFFFF;
+    pld->mx = 0xFFFFFFFF;
+    pld->str = "Name0";
+    arenaPop(arena, sizeof(Payload));
+
+    arenaSetPos(arena, pos);
+    i8 *x = arenaPush(arena, sizeof(i8), _Alignof(i8));
+    *x = 0xDD;
+
+    arenaPop(arena, sizeof(Payload));
+
+
+    arenaSetPos(arena, pos);
+    nums = arenaPushArray(arena, f32, len);
+    for (i32 i = 0; i < len; ++i) {
+        nums[i] = (f32)(i + 1);
+    }
+
+    arenaClear(arena);
+
+    // vec4i8 *vs = arenaPushArrayZero(&arena, vec4i8, 32);
+    const i32 npts = 32;
+    vec4i8 *vs = arenaPushArray(arena, vec4i8, npts);
+    for (i32 i = 0; i < npts; ++i) {
+        vs[i].x = 0xAA;
+        vs[i].y = 0xBB;
+        vs[i].z = 0xCC;
+        vs[i].w = 0xDD;
+    }
+    arenaPopArray(arena, vec4i8, npts);
+
+    // arenaPrint(arena);
+    arenaClear(arena);
+    printf("\n");
 }
-
-static inline string string_from_lit(Arena *arena, char const *string_lit) {
-    u64 length = strlen(string_lit);
-    string result = string_reserve(arena, length);
-    memcpy(result.data, string_lit, length);
-    return result;
-}
-
 
 void Array_test(Arena *arena) {
     printf("Array_test:\n");
     printf("----------------------------\n");
     void* pos = NULL;
-    pos = arenaGetPos(arena);
-    i32 const string_alloc_capacity = 27;
-    Array_i8 string = Array_i8_reserve(arena, string_alloc_capacity);
-    for (i32 i = 0; i < string_alloc_capacity; ++i) {
-        Array_i8_append(arena, &string, 0b01100000 | i + 1);
-    }
-    Array_i8_append(arena, &string, '\0');
-    printf("string: %s\n", string.data);
-    Array_i8_destroy(arena, &string);
-    arenaSetPos(arena, pos);
 
     pos = arenaGetPos(arena);
     i32 const vectors_alloc_capacity = 10;
@@ -136,6 +209,54 @@ void Array_test(Arena *arena) {
     for (i32 i = 0; i < arr.length; ++i) { printf("arr[%d] = %d\n", i, arr.data[i]); }
     Array_i8_destroy(arena, &arr);
     printf("\n");
+}
+
+void String_test(Arena *arena) {
+    void *pos = NULL;
+    pos = arenaGetPos(arena);
+    i32 const string_alloc_capacity = 27;
+    string8 string = string8_reserve(arena, string_alloc_capacity);
+    for (i32 i = 0; i < string_alloc_capacity - 1; ++i) {
+        string8_append_byte(arena, &string, 0b01100000 | (i + 1));
+    }
+    printf("string = %s\n", string.data);
+    arenaSetPos(arena, pos);
+
+    pos = arenaGetPos(arena);
+    string = string8_from_cstr(arena, "Hello, ");
+    string8_append_cstr(arena, &string, "World!");
+    string8_print(&string);
+    arenaSetPos(arena, pos);
+
+    pos = arenaGetPos(arena);
+    string = string8_read_file(arena, "test.txt");
+    printf("file contents = %s\n", string.data);
+    Array_string8slice lines = string8slice_split_from_string8(arena, string, '\n');
+    for (i32 i = 0; i < lines.length; i++) {
+        printf("[%d]:", i);
+        string8slice_print(lines.data[i]);
+    }
+    arenaSetPos(arena, pos);
+
+    pos = arenaGetPos(arena);
+    string = string8_read_file(arena, "test.csv");
+    printf("file contents = \n%s\n", string.data);
+    lines = string8slice_split_from_string8(arena, string, '\n');
+    for (i32 i = 0; i < lines.length; i++) {
+        printf("[%d]:", i);
+        string8slice_print(lines.data[i]);
+        Array_string8slice chunk = string8slice_split(arena, lines.data[i], ',');
+        void *innerpos = arenaGetPos(arena);
+        for (i32 j = 0; j < chunk.length; j++) {
+            string8slice_print(chunk.data[j]);
+            // printf("%s", chunk.data[j].data);
+            f32 x = strtof(string8slice_to_cstr_temp(arena, chunk.data[j]), NULL);
+            arenaSetPos(arena, innerpos);
+            printf("extracted float = %f\n", x);
+        }
+        printf("\n");
+    }
+    arenaSetPos(arena, pos);
 }
 
 void List_test(Arena *arena) {
@@ -374,93 +495,6 @@ void Map_test(Arena *arena) {
     printf("\n");
 }
 
-structdef(Payload) {
-    i32 id;
-    i32 mx;
-    char *str;
-};
-
-structdef(vec4i8) { i8 x; i8 y; i8 z; i8 w; };
-
-void Arena_test(Arena *arena) {
-    printf("Arena_test:\n");
-    printf("----------------------------\n");
-    // Arena arena = {0};
-    // arenaInit(arena);
-
-    const i32 len = 4;
-    f32 *nums = arenaPushArray(arena, f32, len);
-    for (i32 i = 0; i < len; ++i) {
-        nums[i] = (f32)(i + 1);
-    }
-    for (i32 i = 0; i < len; ++i) {
-        printf("%f ", nums[i]);
-    }
-    printf("\n");
-
-    u8 *ptr = (u8 *)nums;
-    for (i32 i = 0; i < sizeof(f32) * len; ++i) {
-        printf("%02x ", ptr[i]);
-    }
-    printf("\n");
-
-    void *pos = arena->cursor;
-
-    char *str0 = strAlloc(arena, "this is a te");
-    char *str1 = strAlloc(arena, "st string to");
-    char *str2 = strAlloc(arena, "alloc bytes.");
-    printf("%s\n", str0);
-    printf("%s\n", str1);
-    printf("%s\n", str2);
-
-    strDealloc(arena, str2);
-    str2 = strAlloc(arena, "fortitude");
-    printf("%s\n", str0);
-    printf("%s\n", str1);
-    printf("%s\n", str2);
-
-    Payload *pld = arenaPushStruct(arena, Payload);
-    pld->id = 0xDEADBEEF;
-    pld->mx = 0xCAFEBABE;
-    pld->str = "Name0";
-    arenaPop(arena, sizeof(Payload));
-    pld = arenaPushStruct(arena, Payload);
-    pld->id = 0xFFFFFFFF;
-    pld->mx = 0xFFFFFFFF;
-    pld->str = "Name0";
-    arenaPop(arena, sizeof(Payload));
-
-    arenaSetPos(arena, pos);
-    i8 *x = arenaPush(arena, sizeof(i8), _Alignof(i8));
-    *x = 0xDD;
-
-    arenaPop(arena, sizeof(Payload));
-
-
-    arenaSetPos(arena, pos);
-    nums = arenaPushArray(arena, f32, len);
-    for (i32 i = 0; i < len; ++i) {
-        nums[i] = (f32)(i + 1);
-    }
-
-    arenaClear(arena);
-
-    // vec4i8 *vs = arenaPushArrayZero(&arena, vec4i8, 32);
-    const i32 npts = 32;
-    vec4i8 *vs = arenaPushArray(arena, vec4i8, npts);
-    for (i32 i = 0; i < npts; ++i) {
-        vs[i].x = 0xAA;
-        vs[i].y = 0xBB;
-        vs[i].z = 0xCC;
-        vs[i].w = 0xDD;
-    }
-    arenaPopArray(arena, vec4i8, npts);
-
-    // arenaPrint(arena);
-    arenaClear(arena);
-    printf("\n");
-}
-
 void itos(int value, char* buffer) {
     char temp[12]; // Temporary buffer (enough for INT_MIN or INT_MAX with sign)
     int i = 0;
@@ -495,28 +529,17 @@ i32 main(i32 argc, char *argv[]) {
     printf("haikal test begin...\n");
     Arena arena = {};
     arenaInit(&arena);
+    Arena_test(&arena);
     Array_test(&arena);
+    String_test(&arena);
     Map_test(&arena);
     List_test(&arena);
     DList_test(&arena);
     Queue_test(&arena);
     Stack_test(&arena);
-    Arena_test(&arena);
-    Archetype_test();
-    string s = string_from_lit(&arena, "Hell, World!");
-    printf("string = %s\n", s.data);
+    // Archetype_test(&arena);
     printf("haikal test end...\n");
     printf("----------------------------\n");
-    // TODO: fix code gen for external files
-    // for this to work, we need to read all the included files
-    // compile_commands.json should be enough...
-    // or, use a unity build and just include everything in main.c 
-    // but LSP will die in Component.h...
-    //---------------------------------------------------------------------------------------------------
-    // Component comp = Component_create(10);
-    // printf("comp.id = %d\n", comp.id);
-    // Component_destroy(&comp);
-
     return 0;
 }
 
