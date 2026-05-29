@@ -1,12 +1,12 @@
 #include "string8_containers.h"
 
-Array_string8 string8_split_char(Arena *arena, string8 src, char sep) {
+Vec_string8 string8_split_char(memops_arena *arena, string8 src, char sep) {
     i32 count = 1;
     for (i32 i = 0; i < src.length; i++) {
         if (src.data[i] == (u8)sep) count++;
     }
 
-    Array_string8 out = Array_string8_reserve(arena, count);
+    Vec_string8 out = Vec_string8_reserve(arena, count);
 
     u8 *start = src.data;
     u8 *end   = src.data + src.length;
@@ -14,7 +14,7 @@ Array_string8 string8_split_char(Arena *arena, string8 src, char sep) {
     for (u8 *p = start; p < end; p++) {
         if (*p == (u8)sep) {
             i32 len = (i32)(p - start);
-            Array_string8_append(arena, &out, (string8){
+            Vec_string8_append(arena, &out, (string8){
                 .data = start,
                 .length = len,
             });
@@ -24,7 +24,7 @@ Array_string8 string8_split_char(Arena *arena, string8 src, char sep) {
 
     if (start <= end) {
         i32 len = (i32)(end - start);
-        Array_string8_append(arena, &out, (string8){
+        Vec_string8_append(arena, &out, (string8){
             .data = start,
             .length = len,
         });

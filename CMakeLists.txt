@@ -6,11 +6,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # set(CMAKE_C_STANDARD 99)
 # set(CMAKE_C_STANDARD_REQUIRED True)
 
+add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 include_directories(extern/haikal/src/meta_arena/gen)
 # include_directories(extern/saha/src)
 add_executable(${PROJECT_NAME}
-    src/fileops.c
-    src/Component.c
     src/main.c
     src/string8.c
     src/string8_containers.c

@@ -11,19 +11,19 @@
 // this is because the container has `T` forward declared.
 // Warning: can be recursive type
 //
-// for types that include a container of themselves eg `struct T { Array_T arr; };`
+// for types that include a container of themselves eg `struct T { Vec_T arr; };`
 // the type must be included after the generated header.
 // this is because the type needs to know the container definition.
 // Warning: can be recursive type with `T *` but not `T`
 //---------------------------------------------------------------------------------------------------
 // primitives
 //---------------------------------------------------------------------------------------------------
-// haikal@Array:voidptr:p
-// haikal@Array:i8:p
-// haikal@Array:i32:p
-// haikal@Array:f32:p
-// haikal@Array:char:p
-// haikal@Array:u8:p
+// haikal@Vec:voidptr:p
+// haikal@Vec:i8:p
+// haikal@Vec:i32:p
+// haikal@Vec:f32:p
+// haikal@Vec:char:p
+// haikal@Vec:u8:p
 // haikal@Map:i32:p
 // haikal@Map:u64:p
 // haikal@Node:i32:p
@@ -35,14 +35,11 @@
 //---------------------------------------------------------------------------------------------------
 // structs
 //---------------------------------------------------------------------------------------------------
-// haikal@Array:vec3:s
-// haikal@Array:vec4:s
-// haikal@Array:Rec:s
+// haikal@Vec:vec3:s
 // haikal@Map:vec3:s
-// haikal@Map:Rec:s
-// haikal@Array:List_i32:s
-// haikal@Map:Array_i8:s
-// haikal@Map:Array_i32:s
+// haikal@Vec:List_i32:s
+// haikal@Map:Vec_i8:s
+// haikal@Map:Vec_i32:s
 //---------------------------------------------------------------------------------------------------
 // unions
 //---------------------------------------------------------------------------------------------------
@@ -58,17 +55,31 @@ bool i32_eq(i32 a, i32 b) { return a == b; }
 #include <string.h>
 
 // add types
-// haikal@Array:string8:s
+// haikal@Vec:string8:s
 #include "string8.h"
-// haikal@Array:string8slice:s
+// haikal@Vec:string8slice:s
 #include "string8slice.h"
 
-#include "vec3.h"
-#include "Rec.h"
-#include "Component.h"
+typedef struct vec3 vec3;
+struct vec3 {
+    f32 x; f32 y; f32 z;
+};
+
+typedef struct Payload Payload;
+struct Payload {
+    i32 id;
+    i32 mx;
+    char *str;
+};
+
+typedef struct vec4i8 vec4i8;
+struct vec4i8 {
+    i8 x; i8 y; i8 z; i8 w;
+};
 
 // add codegen
 #include <Array.h>
+#include <Vec.h>
 #include <Node.h>
 #include <List.h>
 #include <BiNode.h>
@@ -81,22 +92,14 @@ bool i32_eq(i32 a, i32 b) { return a == b; }
 #include "string8_containers.h"
 #include "string8slice_containers.h"
 
-structdef(Payload) {
-    i32 id;
-    i32 mx;
-    char *str;
-};
-
-structdef(vec4i8) { i8 x; i8 y; i8 z; i8 w; };
-
-void Arena_test(Arena *arena) {
-    printf("Arena_test:\n");
+void arena_test(memops_arena *arena) {
+    printf("arena_test:\n");
     printf("----------------------------\n");
-    // Arena arena = {0};
-    // arenaInit(arena);
+    // memops_arena arena = {0};
+    // memops_arena_initialize(arena);
 
     const i32 len = 4;
-    f32 *nums = arenaPushArray(arena, f32, len);
+    f32 *nums = memops_arena_push_array(arena, f32, len);
     for (i32 i = 0; i < len; ++i) {
         nums[i] = (f32)(i + 1);
     }
@@ -113,153 +116,140 @@ void Arena_test(Arena *arena) {
 
     void *pos = arena->cursor;
 
-    char *str0 = strAlloc(arena, "this is a te");
-    char *str1 = strAlloc(arena, "st string to");
-    char *str2 = strAlloc(arena, "alloc bytes.");
-    printf("%s\n", str0);
-    printf("%s\n", str1);
-    printf("%s\n", str2);
-
-    strDealloc(arena, str2);
-    str2 = strAlloc(arena, "fortitude");
-    printf("%s\n", str0);
-    printf("%s\n", str1);
-    printf("%s\n", str2);
-
-    Payload *pld = arenaPushStruct(arena, Payload);
+    Payload *pld = memops_arena_push_struct(arena, Payload);
     pld->id = 0xDEADBEEF;
     pld->mx = 0xCAFEBABE;
     pld->str = "Name0";
-    arenaPop(arena, sizeof(Payload));
-    pld = arenaPushStruct(arena, Payload);
+    memops_arena_pop(arena, sizeof(Payload));
+    pld = memops_arena_push_struct(arena, Payload);
     pld->id = 0xFFFFFFFF;
     pld->mx = 0xFFFFFFFF;
     pld->str = "Name0";
-    arenaPop(arena, sizeof(Payload));
+    memops_arena_pop(arena, sizeof(Payload));
 
-    arenaSetPos(arena, pos);
-    i8 *x = arenaPush(arena, sizeof(i8), _Alignof(i8));
+    memops_arena_set_pos(arena, pos);
+    i8 *x = memops_arena_push(arena, sizeof(i8), _Alignof(i8));
     *x = 0xDD;
 
-    arenaPop(arena, sizeof(Payload));
+    memops_arena_pop(arena, sizeof(Payload));
 
 
-    arenaSetPos(arena, pos);
-    nums = arenaPushArray(arena, f32, len);
+    memops_arena_set_pos(arena, pos);
+    nums = memops_arena_push_array(arena, f32, len);
     for (i32 i = 0; i < len; ++i) {
         nums[i] = (f32)(i + 1);
     }
 
-    arenaClear(arena);
+    memops_arena_clear(arena);
 
     // vec4i8 *vs = arenaPushArrayZero(&arena, vec4i8, 32);
     const i32 npts = 32;
-    vec4i8 *vs = arenaPushArray(arena, vec4i8, npts);
+    vec4i8 *vs = memops_arena_push_array(arena, vec4i8, npts);
     for (i32 i = 0; i < npts; ++i) {
         vs[i].x = 0xAA;
         vs[i].y = 0xBB;
         vs[i].z = 0xCC;
         vs[i].w = 0xDD;
     }
-    arenaPopArray(arena, vec4i8, npts);
+    memops_arena_pop_array(arena, vec4i8, npts);
 
     // arenaPrint(arena);
-    arenaClear(arena);
+    memops_arena_clear(arena);
     printf("\n");
 }
 
-void Array_test(Arena *arena) {
-    printf("Array_test:\n");
+void Vec_test(memops_arena *arena) {
+    printf("Vec_test:\n");
     printf("----------------------------\n");
-    void* pos = NULL;
+    void *pos = NULL;
 
-    pos = arenaGetPos(arena);
+    pos = memops_arena_get_pos(arena);
     i32 const vectors_alloc_capacity = 10;
-    Array_vec3 vectors = Array_vec3_reserve(arena, vectors_alloc_capacity);
+    Vec_vec3 vectors = Vec_vec3_reserve(arena, vectors_alloc_capacity);
     for (i32 i = 0; i < vectors_alloc_capacity; ++i) {
-        Array_vec3_append(arena, &vectors, (vec3){1.f, (f32)i, 3.141592});
+        Vec_vec3_append(arena, &vectors, (vec3){1.f, (f32)i, 3.141592});
     }
     for (i32 i = 0; i < vectors.length; ++i) { 
         printf("vectors[%d] = {%f, %f, %f}\n", i, vectors.data[i].x, vectors.data[i].y, vectors.data[i].z); 
     }
-    Array_vec3_destroy(arena, &vectors);
-    arenaSetPos(arena, pos);
+    Vec_vec3_destroy(arena, &vectors);
+    memops_arena_set_pos(arena, pos);
 
-    Array_i8 arr = {0};
-    Array_i8_reserve(arena, 32);
-    Array_i8_append(arena, &arr, 127);
-    Array_i8_append(arena, &arr, 23);
-    Array_i8_append(arena, &arr, 11);
-    Array_i8_append(arena, &arr, 8);
-    Array_i8_append(arena, &arr, 127);
-    Array_i8_append(arena, &arr, 23);
-    Array_i8_append(arena, &arr, 11);
-    Array_i8_append(arena, &arr, 8);
+    Vec_i8 arr = {0};
+    Vec_i8_reserve(arena, 32);
+    Vec_i8_append(arena, &arr, 127);
+    Vec_i8_append(arena, &arr, 23);
+    Vec_i8_append(arena, &arr, 11);
+    Vec_i8_append(arena, &arr, 8);
+    Vec_i8_append(arena, &arr, 127);
+    Vec_i8_append(arena, &arr, 23);
+    Vec_i8_append(arena, &arr, 11);
+    Vec_i8_append(arena, &arr, 8);
     for (i32 i = 0; i < arr.length; ++i) { printf("arr[%d] = %d\n", i, arr.data[i]); }
     arr.length = 0;
     for (i32 i = 0; i < arr.length; ++i) { printf("arr[%d] = %d\n", i, arr.data[i]); }
-    Array_i8_append(arena, &arr, 0xBA);
-    Array_i8_append(arena, &arr, 0xBA);
-    Array_i8_append(arena, &arr, 0xBA);
-    Array_i8_append(arena, &arr, 0xBA);
-    Array_i8_append(arena, &arr, 0xBA);
-    Array_i8_append(arena, &arr, 0xBA);
-    Array_i8_append(arena, &arr, 0xBA);
-    Array_i8_append(arena, &arr, 0xBA);
+    Vec_i8_append(arena, &arr, 0xBA);
+    Vec_i8_append(arena, &arr, 0xBA);
+    Vec_i8_append(arena, &arr, 0xBA);
+    Vec_i8_append(arena, &arr, 0xBA);
+    Vec_i8_append(arena, &arr, 0xBA);
+    Vec_i8_append(arena, &arr, 0xBA);
+    Vec_i8_append(arena, &arr, 0xBA);
+    Vec_i8_append(arena, &arr, 0xBA);
     for (i32 i = 0; i < arr.length; ++i) { printf("arr[%d] = %d\n", i, arr.data[i]); }
-    Array_i8_destroy(arena, &arr);
+    Vec_i8_destroy(arena, &arr);
     printf("\n");
 }
 
-void String_test(Arena *arena) {
+void String_test(memops_arena *arena) {
     void *pos = NULL;
-    pos = arenaGetPos(arena);
+    pos = memops_arena_get_pos(arena);
     i32 const string_alloc_capacity = 27;
     string8 string = string8_reserve(arena, string_alloc_capacity);
     for (i32 i = 0; i < string_alloc_capacity - 1; ++i) {
         string8_append_byte(arena, &string, 0b01100000 | (i + 1));
     }
     printf("string = %s\n", string.data);
-    arenaSetPos(arena, pos);
+    memops_arena_set_pos(arena, pos);
 
-    pos = arenaGetPos(arena);
+    pos = memops_arena_get_pos(arena);
     string = string8_from_cstr(arena, "Hello, ");
     string8_append_cstr(arena, &string, "World!");
     string8_print(&string);
-    arenaSetPos(arena, pos);
+    memops_arena_set_pos(arena, pos);
 
-    pos = arenaGetPos(arena);
+    pos = memops_arena_get_pos(arena);
     string = string8_read_file(arena, "test.txt");
     printf("file contents = %s\n", string.data);
-    Array_string8slice lines = string8slice_split_from_string8(arena, string, '\n');
+    Vec_string8slice lines = string8slice_split_from_string8(arena, string, '\n');
     for (i32 i = 0; i < lines.length; i++) {
         printf("[%d]:", i);
         string8slice_print(lines.data[i]);
     }
-    arenaSetPos(arena, pos);
+    memops_arena_set_pos(arena, pos);
 
-    pos = arenaGetPos(arena);
+    pos = memops_arena_get_pos(arena);
     string = string8_read_file(arena, "test.csv");
     printf("file contents = \n%s\n", string.data);
     lines = string8slice_split_from_string8(arena, string, '\n');
     for (i32 i = 0; i < lines.length; i++) {
         printf("[%d]:", i);
         string8slice_print(lines.data[i]);
-        Array_string8slice chunk = string8slice_split(arena, lines.data[i], ',');
-        void *innerpos = arenaGetPos(arena);
+        Vec_string8slice chunk = string8slice_split(arena, lines.data[i], ',');
+        void *innerpos = memops_arena_get_pos(arena);
         for (i32 j = 0; j < chunk.length; j++) {
             string8slice_print(chunk.data[j]);
             // printf("%s", chunk.data[j].data);
             f32 x = strtof(string8slice_to_cstr_temp(arena, chunk.data[j]), NULL);
-            arenaSetPos(arena, innerpos);
+            memops_arena_set_pos(arena, innerpos);
             printf("extracted float = %f\n", x);
         }
         printf("\n");
     }
-    arenaSetPos(arena, pos);
+    memops_arena_set_pos(arena, pos);
 }
 
-void List_test(Arena *arena) {
+void List_test(memops_arena *arena) {
     printf("List_test:\n");
     List_i32 loi = {0};
     Node_i32 *node = NULL;
@@ -294,15 +284,15 @@ void List_test(Arena *arena) {
     }
     List_i32_destroy(arena, &loi);
 
-    printf("Array_List_i32:\n");
-    Array_List_i32 arrayoflists = {0};
-    List_i32 *list = Array_List_i32_append(arena, &arrayoflists, (List_i32) {0});
+    printf("Vec_List_i32:\n");
+    Vec_List_i32 arrayoflists = {0};
+    List_i32 *list = Vec_List_i32_append(arena, &arrayoflists, (List_i32) {0});
     if (!list) { printf("list invalid!\n"); }
     List_i32_append(arena, list, 32);
     List_i32_append(arena, list, 22);
     List_i32_append(arena, list, 12);
     List_i32_print(arena, list);
-    list = Array_List_i32_append(arena, &arrayoflists, (List_i32) {0});
+    list = Vec_List_i32_append(arena, &arrayoflists, (List_i32) {0});
     if (!list) { printf("list invalid!\n"); }
     List_i32_append(arena, list, 16);
     List_i32_append(arena, list, 26);
@@ -317,7 +307,7 @@ void List_test(Arena *arena) {
     printf("\n");
 }
 
-void DList_test(Arena *arena) {
+void DList_test(memops_arena *arena) {
     printf("DList_test:\n");
     printf("----------------------------\n");
     DList_i32 *loi = DList_i32_create(arena);
@@ -337,7 +327,7 @@ void DList_test(Arena *arena) {
     printf("\n");
 }
 
-void Queue_test(Arena *arena) {
+void Queue_test(memops_arena *arena) {
     printf("Queue_test:\n");
     printf("----------------------------\n");
 
@@ -381,7 +371,7 @@ void Queue_test(Arena *arena) {
     printf("\n");
 }
 
-void Stack_test(Arena *arena) {
+void Stack_test(memops_arena *arena) {
     printf("Stack_test:\n");
     printf("----------------------------\n");
     Stack_i32 *stack = Stack_i32_create(arena);
@@ -416,7 +406,7 @@ void Stack_test(Arena *arena) {
     printf("\n");
 }
 
-void Map_test(Arena *arena) {
+void Map_test(memops_arena *arena) {
     printf("Map_test:\n");
     puts("");
     printf("Map_i32:\n");
@@ -468,30 +458,30 @@ void Map_test(Arena *arena) {
     Map_vec3_destroy(arena, hashmapvec);
 
     puts("");
-    printf("Map_Array_i32:\n");
-    Map_Array_i32 *hashmaparray = Map_Array_i32_create(arena);
-    Array_i32 *resultarray = Map_Array_i32_get(arena, hashmaparray, "dog");
+    printf("Map_Vec_i32:\n");
+    Map_Vec_i32 *hashmaparray = Map_Vec_i32_create(arena);
+    Vec_i32 *resultarray = Map_Vec_i32_get(arena, hashmaparray, "dog");
     if (!resultarray) {
-        Map_Array_i32_set(arena, hashmaparray, "dog", (Array_i32) {0});
-        resultarray = Map_Array_i32_get(arena, hashmaparray, "dog");
+        Map_Vec_i32_set(arena, hashmaparray, "dog", (Vec_i32) {0});
+        resultarray = Map_Vec_i32_get(arena, hashmaparray, "dog");
     }
     printf("key = %s, val = %p", "dog", resultarray);
-    *resultarray = Array_i32_reserve(arena, 12);
+    *resultarray = Vec_i32_reserve(arena, 12);
     for (i32 i = 0; i < 12; i++) {
         resultarray->data[i] = i * i;
     }
     for (i32 i = 0; i < 12; i++) {
-        printf("Array.data[%d] = %d\n", i, resultarray->data[i]);
+        printf("Vec.data[%d] = %d\n", i, resultarray->data[i]);
     }
-    printf("hashmapvec length = %llu\n", Map_Array_i32_length(arena, hashmaparray));
+    printf("hashmapvec length = %llu\n", Map_Vec_i32_length(arena, hashmaparray));
 
     printf("hash iterator...\n");
-    MapIterator_Array_i32 itarr = MapIterator_Array_i32_create(arena, hashmaparray);
-    while (MapIterator_Array_i32_next(arena, &itarr)) {
+    MapIterator_Vec_i32 itarr = MapIterator_Vec_i32_create(arena, hashmaparray);
+    while (MapIterator_Vec_i32_next(arena, &itarr)) {
         printf("key = %s, val = {%llu, %llu, %p}\n", itarr.key, itarr.val.length, itarr.val.border, itarr.val.data);
-        Array_i32_destroy(arena, &itarr.val);
+        Vec_i32_destroy(arena, &itarr.val);
     }
-    Map_Array_i32_destroy(arena, hashmaparray);
+    Map_Vec_i32_destroy(arena, hashmaparray);
     printf("\n");
 }
 
@@ -527,23 +517,21 @@ void itos(int value, char* buffer) {
 
 i32 main(i32 argc, char *argv[]) {
     printf("haikal test begin...\n");
-    Arena arena = {};
-    arenaInit(&arena);
-    Arena_test(&arena);
-    Array_test(&arena);
+    memops_arena arena = {};
+    memops_arena_initialize(&arena);
+    // arena_test(&arena);
+    Vec_test(&arena);
     String_test(&arena);
     Map_test(&arena);
     List_test(&arena);
     DList_test(&arena);
     Queue_test(&arena);
     Stack_test(&arena);
-    // Archetype_test(&arena);
     printf("haikal test end...\n");
-    printf("----------------------------\n");
     return 0;
 }
 
-#include <Array.c>
+#include <Vec.c>
 #include <BiNode.c>
 #include <DList.c>
 #include <Map.c>
