@@ -6,25 +6,15 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # set(CMAKE_C_STANDARD 99)
 # set(CMAKE_C_STANDARD_REQUIRED True)
 
-add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 include_directories(extern/haikal/src/meta_arena/gen)
-# include_directories(extern/saha/src)
+
+add_subdirectory(extern/haikal)
+
 add_executable(${PROJECT_NAME}
     src/main.c
+    src/tests.c
     src/string8.c
-    src/string8_containers.c
-    src/string8slice.c
-    src/string8slice_containers.c
 )
+target_compile_definitions(${PROJECT_NAME} PRIVATE _CRT_SECURE_NO_WARNINGS)
+add_dependencies(${PROJECT_NAME} haikal)
 # add_subdirectory(extern) # in case of modules...
-
-if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
-endif()
-
-if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-endif()
-
-if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-endif()
-
-# add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resource ${CMAKE_CURRENT_BINARY_DIR}/resource)

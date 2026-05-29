@@ -119,3 +119,124 @@ bool string8_equals_cstr(const string8 *a, const char *cstr) {
 void string8_print(const string8 *s) {
     printf("%.*s\n", (int)s->length, s->data);
 }
+
+string8slice string8slice_from_parts(u8 *data, u64 length) {
+    string8slice s;
+    s.data = data;
+    s.length = length;
+    return s;
+}
+
+string8slice string8slice_sub(string8slice s, u64 start, u64 count) {
+    if (start >= s.length) return (string8slice){0};
+    if (start + count > s.length) count = s.length - start;
+
+    string8slice out;
+    out.data = s.data + start;
+    out.length = count;
+    return out;
+}
+
+bool string8slice_equals(string8slice a, string8slice b) {
+    if (a.length != b.length) return false;
+    return memcmp(a.data, b.data, a.length) == 0;
+}
+
+bool string8slice_equals_cstr(string8slice s, const char *cstr) {
+    u64 len = strlen(cstr);
+    if (s.length != len) return false;
+    return memcmp(s.data, cstr, len) == 0;
+}
+
+char *string8slice_to_cstr_temp(memops_arena *arena, string8slice s) {
+    char *out = memops_arena_push_array(arena, char, s.length + 1);
+    memcpy(out, s.data, s.length);
+    out[s.length] = 0;
+    return out;
+}
+
+void string8slice_print(string8slice s) {
+    printf("%.*s\n", (int)s.length, s.data);
+}
+
+Vec_string8 string8_split_char(memops_arena *arena, string8 src, char sep) {
+    i32 count = 1;
+    for (i32 i = 0; i < src.length; i++) {
+        if (src.data[i] == (u8)sep) count++;
+    }
+
+    Vec_string8 out = Vec_string8_reserve(arena, count);
+
+    u8 *start = src.data;
+    u8 *end   = src.data + src.length;
+
+    for (u8 *p = start; p < end; p++) {
+        if (*p == (u8)sep) {
+            i32 len = (i32)(p - start);
+            Vec_string8_append(arena, &out, (string8){
+                .data = start,
+                .length = len,
+            });
+            start = p + 1;
+        }
+    }
+
+    if (start <= end) {
+        i32 len = (i32)(end - start);
+        Vec_string8_append(arena, &out, (string8){
+            .data = start,
+            .length = len,
+        });
+    }
+
+    return out;
+}
+
+Vec_string8slice string8slice_split(memops_arena *arena, string8slice src, char sep) {
+    u64 count = 1;
+    for (u64 i = 0; i < src.length; i++)
+        if (src.data[i] == sep) count++;
+
+    Vec_string8slice out = Vec_string8slice_reserve(arena, count);
+
+    u8 *start = src.data;
+    u8 *end = src.data + src.length;
+
+    for (u8 *p = start; p < end; p++) {
+        if (*p == sep) {
+            Vec_string8slice_append(arena, &out,
+                string8slice_from_parts(start, (u64)(p - start)));
+            start = p + 1;
+        }
+    }
+
+    Vec_string8slice_append(arena, &out,
+        string8slice_from_parts(start, (u64)(end - start)));
+
+    return out;
+}
+
+Vec_string8slice string8slice_split_from_string8(memops_arena *arena, string8 s, char sep) {
+    u64 count = 1;
+    for (u64 i = 0; i < s.length; i++) {
+        if (s.data[i] == (u8)sep) count++;
+    }
+
+    Vec_string8slice out = Vec_string8slice_reserve(arena, count);
+
+    u8 *start = s.data;
+    u8 *end = s.data + s.length;
+
+    for (u8 *p = start; p < end; p++) {
+        if (*p == (u8)sep) {
+            Vec_string8slice_append(arena, &out,
+                string8slice_from_parts(start, (u64)(p - start)));
+            start = p + 1;
+        }
+    }
+
+    Vec_string8slice_append(arena, &out,
+        string8slice_from_parts(start, (u64)(end - start)));
+
+    return out;
+}
