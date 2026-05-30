@@ -39,8 +39,13 @@ bool i32_eq(i32 a, i32 b) { return a == b; }
 haikal(Vec, i32:prim)
 
 #include "string8.h"
-#include "test_types.h"
-#include "tests.h"
+
+typedef struct vec3 vec3;
+struct vec3 {
+    f32 x;
+    f32 y;
+    f32 z;
+};
 
 // Generated public APIs. Value types above must be complete before this block.
 #include <Array.h>
