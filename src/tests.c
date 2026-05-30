@@ -151,7 +151,7 @@ static void String_test(memops_arena *arena) {
     memops_arena_set_pos(arena, pos);
 
     pos = memops_arena_get_pos(arena);
-    string = string8_read_file(arena, "test.txt");
+    string = string8_read_file(arena, "res/test.txt");
     printf("file contents = %s\n", string.data);
     Vec_string8slice lines = string8slice_split_from_string8(arena, string, '\n');
     for (i32 i = 0; i < lines.length; i++) {
@@ -161,7 +161,7 @@ static void String_test(memops_arena *arena) {
     memops_arena_set_pos(arena, pos);
 
     pos = memops_arena_get_pos(arena);
-    string = string8_read_file(arena, "test.csv");
+    string = string8_read_file(arena, "res/test.csv");
     printf("file contents = \n%s\n", string.data);
     lines = string8slice_split_from_string8(arena, string, '\n');
     for (i32 i = 0; i < lines.length; i++) {

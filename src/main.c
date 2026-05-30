@@ -1,23 +1,6 @@
-//---------------------------------------------------------------------------------------------------
-// monomorphization codegen limitations:
-//---------------------------------------------------------------------------------------------------
-// for containers that have value types eg `T`,
-// the type must be included before the generated header.
-// this is because the container expects to know the type in it's struct.
-// Warning: cannot be recursive type
-//
-// for containers that have pointer types eg `T *`,
-// the type can be included before or after the generated header.
-// this is because the container has `T` forward declared.
-// Warning: can be recursive type
-//
-// for types that include a container of themselves eg `struct T { Vec_T arr; };`
-// the type must be included after the generated header.
-// this is because the type needs to know the container definition.
-// Warning: can be recursive type with `T *` but not `T`
-//---------------------------------------------------------------------------------------------------
+//-----------------------------------------------
 // primitives
-//---------------------------------------------------------------------------------------------------
+//-----------------------------------------------
 // haikal@Vec:voidptr:p
 // haikal@Vec:i8:p
 // haikal@Vec:i32:p
@@ -32,9 +15,9 @@
 // haikal@DList:i32:p
 // haikal@Queue:i32:p
 // haikal@Stack:i32:p
-//---------------------------------------------------------------------------------------------------
+//-----------------------------------------------
 // structs
-//---------------------------------------------------------------------------------------------------
+//-----------------------------------------------
 // haikal@Vec:vec3:s
 // haikal@Map:vec3:s
 // haikal@Vec:List_i32:s
@@ -42,10 +25,9 @@
 // haikal@Map:Vec_i32:s
 // haikal@Vec:string8:s
 // haikal@Vec:string8slice:s
-//---------------------------------------------------------------------------------------------------
+//-----------------------------------------------
 // unions
-//---------------------------------------------------------------------------------------------------
-#include <stdlib.h>
+//-----------------------------------------------
 #define SAHA_IMPLEMENTATION
 #include <saha.h>
 
@@ -53,7 +35,8 @@
 #include <core.h>
 bool i32_eq(i32 a, i32 b) { return a == b; }
 
-#include <stdio.h>
+#define haikal(a, b)
+haikal(Vec, i32:prim)
 
 #include "string8.h"
 #include "test_types.h"
@@ -71,14 +54,16 @@ bool i32_eq(i32 a, i32 b) { return a == b; }
 #include <Map.h>
 
 i32 main(i32 argc, char *argv[]) {
-    (void)argc;
-    (void)argv;
-
-    printf("haikal test begin...\n");
     memops_arena arena = {};
     memops_arena_initialize(&arena);
-    tests_run(&arena);
-    printf("haikal test end...\n");
+    memops_arena_temp scope = memops_arena_temp_begin(&arena);
+    {
+        i32 *numbers = memops_arena_push_array_zero(&arena, i32, 128);
+        for (i32 i = 0; i < 128; i += 1) {
+            numbers[i] = i;
+        }
+    }
+    memops_arena_temp_end(scope);
     return 0;
 }
 
