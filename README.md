@@ -26,38 +26,38 @@ git submodule update --init --recursive
 Configure the debug build:
 
 ```powershell
-python build.py config debug
+python bunyan.py config debug
 ```
 
 Build debug:
 
 ```powershell
-python build.py build debug
+python bunyan.py build debug
 ```
 
 Build and run:
 
 ```powershell
-python build.py run debug
+python bunyan.py run debug
 ```
 
 Build and launch under the debugger:
 
 ```powershell
-python build.py debugexe debug
+python bunyan.py debugexe debug
 ```
 
 Other configs:
 
 ```powershell
-python build.py build release
-python build.py build reldebug
+python bunyan.py build release
+python bunyan.py build reldebug
 ```
 
 Clean generated build directories:
 
 ```powershell
-python build.py clean
+python bunyan.py clean
 ```
 
-The build wrapper compiles `extern/haikal`, runs `haikal.exe` from the repository root to generate code from `haikal.toml`, then builds `c-init`.
+The build wrapper compiles `extern/haikal`, runs `haikal.exe --entry src/main.c --meta extern/haikal/src/meta_arena` from the repository root, then builds `c-init`.

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from scripts.build import BuildContext, cmake_build, cmake_configure, main, run_cmd
+from scripts.bunyan import BuildContext, cmake_build, cmake_configure, main, run_cmd
 
 
 def build_haikal(ctx: BuildContext) -> None:
@@ -15,7 +15,16 @@ def build_haikal(ctx: BuildContext) -> None:
         build_type="Debug",
     )
     cmake_build(haikal_build_dir)
-    run_cmd([haikal_build_dir / "haikal.exe"], cwd=ctx.root_dir)
+    run_cmd(
+        [
+            haikal_build_dir / "haikal.exe",
+            "--entry",
+            ctx.root_dir / "src" / "main.c",
+            "--meta",
+            ctx.root_dir / "extern" / "haikal" / "src" / "meta_arena",
+        ],
+        cwd=ctx.root_dir,
+    )
 
 
 if __name__ == "__main__":
